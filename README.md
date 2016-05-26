@@ -5,7 +5,7 @@ compiler version : TDM-GCC 4.9.2 32-bit Realease
 
 compiler flags: 
 
-              -static-libgcc -lopengl32 -lgdi32 -lglu32
+              -static -libgcc -lopengl32 -lgdi32 -lglu32
 
 library route:
 
