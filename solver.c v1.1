@@ -260,8 +260,7 @@ void Gaming(void){
 			continue;
 		}
 		
-		
-//		exit(0);///
+
 		if(check_if_win()) return ; 
 
 		if(All_count(0 , array) == 0) break;
@@ -387,8 +386,10 @@ int suppose(int what){
 				printf("s %d c %d f %d\n" , Arround( i , j ,"space" , array) , Arround(i , j , "clear" , array) , Arround(i , j , "flag" , array));
 				exit(0);
 			}*/
-			if(tem_num < neighbor_num(i , j) && tem_num > 0)// **
+			if(array[i][j] == 0 && tem_num < neighbor_num(i , j) && tem_num > 0)// **
 			    border[i][j] = 1;
+			else
+				border[i][j] = 0;
 		}
 
 	for(i = 0; i < Y ; i++){
@@ -578,19 +579,24 @@ int resuppose(void){
 	printf("flags == %f ,FLAGNUM is %d ,  All_count 9 is %d \n" , flags , FLAGNUM , All_count(9 , array));
 	dfs_flags = flags;
 	printf("dfs_flags = %f\n" , dfs_flags);
-	
+
+	//initial dfs_count
+
 	for(k = 0 ; k < Y ; k++)
 		for(l = 0 ; l < X ; l++ ){
 			dfs_count[k][l].num = 0;
 			dfs_count[k][l].exp	= 0;
 		}
-	
+
+	//initial reason_array & dfs_count
+
 	for(k = 0; k < Y ; k++){
 		for(l = 0 ; l < X ; l++){
+			
 			reason_array[k][l] = array[k][l];
+
 			if(array[k][l] != 0){
-				dfs_count[k][l].num = -1;
-				
+				dfs_count[k][l].num = -1;	
 			}
 			else if(neighbor_num(k , l) - Arround(k , l , "space" , array) - Arround(k , l , "flag" , array) == 0 ){
 				dfs_count[k][l].num = 0;// == -2
@@ -605,7 +611,11 @@ int resuppose(void){
 	puts("\n\n              resuppose   start         !!!!!             !!!!!     ");
 	print_array("reason_array");
 	puts("              resuppose            !!!!!             !!!!!     \n");
+	print_array("dfs_count");
+	puts("");
+	print_array("border");
 	printf("dfs_flags == %f\n" , dfs_flags);
+	getchar();
 //	puts("final !!");
 
     out_to_rand = 0;
@@ -619,6 +629,14 @@ int resuppose(void){
 			    border[i][j] = 1;
 		}
     */
+    
+    //something strange, so i make border again
+
+    if(array[i][j] == 0 && tem_num < neighbor_num(i , j) && tem_num > 0)// **
+		border[i][j] = 1;
+	else
+		border[i][j] = 0;
+
 	dfs(0 , 0);
 	puts("out dfs");
 	if(out_to_rand == 10000){
@@ -673,7 +691,7 @@ int resuppose(void){
 	printf("left mine unknow %s\n" , left_mine_unknown ? "TRUE" : "FALSE"); 
     Sleep(2000);
 //	exit(0);
-
+	getchar();
 
 
 
@@ -696,6 +714,7 @@ int resuppose(void){
 	}
 	
 	int bestX = 0 , bestY = 0 , bestchosen = -3;
+	int best_total = 1;
 	
 	for(k = 0 ; k < Y ; k++){
 		for(l = 0 ; l < X ; l++){
@@ -721,22 +740,22 @@ int resuppose(void){
 						if(dfs_count[bestY][bestX].exp > dfs_count[k][l].exp){
 							bestY = k;
 							bestX = l;
+							best_total = 1;
 //							bestchosen = dfs_count[k][l];
 						}
 						else if(dfs_count[bestY][bestX].exp == dfs_count[k][l].exp){
+							
 							if(dfs_count[bestY][bestX].num > dfs_count[k][l].num){
 								bestY = k;
 								bestX = l;
+								best_total = 1;
+							}
+							else if(dfs_count[bestY][bestX].num == dfs_count[k][l].num){
+								best_total++;
 							}
 						}
 					}
-//					else if(left_mine_unknown == 1){
-//						if(bestchosen > dfs_count[k][l]){// change here 因為有加權了 
-//							bestY = k;
-//							bestX = l;
-//							bestchosen = dfs_count[k][l];
-//						}						
-//					}
+					
 				}
 			}
 			
@@ -757,14 +776,47 @@ int resuppose(void){
 			return 0;
 		}
 		else{
-	  		printf("will click bestY = %d , bestX = %d\n" , bestY , bestX);
-	    	printf("num = %1.1f , exp = %d\n" , dfs_count[bestY][bestX].num , dfs_count[bestY][bestX].exp);
-	    	printf("is ( %d )\n" , reason_array[bestY][bestX]);
+	  		
+	  		
+			printf("best total is %d\n" , best_total);
+	    	int rand_num = rand() % best_total ;
+	    	
+			printf("chose NO.%d pt(start from 0)\n" , rand_num);
+	    	
+			for(k = 0 ; k < Y ; k++){
+
+				for(l = 0 ; l < X ; l++){
+					if((dfs_count[k][l].exp == dfs_count[bestY][bestX].exp) && (dfs_count[k][l].num == dfs_count[bestY][bestX].num)){
+
+						printf("%d %d same to the best\n" , k , l);
+						if(rand_num == 0){
+				//			puts("rand_num is 0");
+				//			printf("\nk is %d l is %d break\n\n" , k , l);
+							break;
+						}
+						else{
+				//			printf("rand num is %d\n" , rand_num);
+							rand_num--;
+						}
+						
+					}
+				}
+
+				if(rand_num == 0 && l < X){ // if i doesn't add l < X, it will be wrong , it's so important!!
+				//	printf("\nk is %d l is %d\n\n" , k , l);
+					break;
+				}
+				
+			}
+	    	
+	    	printf("will click bestY = %d , bestX = %d\n" , k , l);
+	    	printf("num = %1.1f , exp = %d\n" , dfs_count[k][l].num , dfs_count[k][l].exp);
+	    	printf("is ( %d )\n" , reason_array[k][l]);
 	    	puts("Enter to continue...");
-	//  	  getchar();
+	  		getchar();
         	//Sleep(7000);
     		open_window("minesweeper");
-        	Click(bestX , bestY  ,"left");
+        	Click(l , k  ,"left");
         }
 	}
 	else{
@@ -880,8 +932,12 @@ void addC(struct notation *beadd , struct notation add){
 	return;
 }
 void dfs(int y , int x){
-
-
+	
+	if(reason_array[15][26] == 10){
+		print_array("reason_array");
+		printf(" 1 y %d  x %d\n" , y , x);
+//		getchar();
+	}
     out_to_rand ++;
 //    if(out_to_rand >=2000){// 100000000){
   //      puts("over 2000");
@@ -896,9 +952,26 @@ void dfs(int y , int x){
             
 	int i , j , k , l , tem_num;
 //	puts("into idfs");
+
 	for(i = 0 ; i < Y ; i++){
 		for(j = 0 ; j < X ; j++){
-			if(i != 0 && j != 0 && i < y && j < x) continue;
+
+
+
+	//		if(i != 0 && j != 0 && i < y && j < x) continue;
+			if(y != 0 && x != 0 && ( (i < y ) || (i == y && j <= x))) continue;
+
+
+			
+//			if(reason_array[14][23] == 9 && reason_array[14][26] == 9 && reason_array[15][23] == 9 && reason_array[15][24] == 10){
+//				puts("all complete");
+//				print_array("reason_array");
+//				printf("suppose into %d %d\n" , i , j);
+//				getchar();
+//			}
+
+			
+			printf("suppose into %d %d\n" , i , j);
 			
 			if(reason_array[i][j] == 0 ){
 
@@ -908,16 +981,55 @@ void dfs(int y , int x){
 			  	if(tem_num < neighbor_num(i , j)){// && tem_num > 0){
 */
 //				printf("border 0 4 %d\n" , border[0][4]);
+
+
+
+
+				
                 if(border[i][j]){
 			  		// if there is any number arround i j , "and there is any space arround i j"??
-			  		
-					int history = 0;	
-					if(All_count(0 , reason_array) - 1 >= dfs_flags){ 
-						reason_array[i][j] = 10; // suppose !!!						
-						int result = check_if_right(i , j);
-						if(result == 0){
+			  		print_array("reason_array");
+					printf("%d %d\n" , i , j );
+//					getchar();
+//					if(i == 15 && j == 26){
+//						printf(" %d >= %f ??\n" , All_count(0 , reason_array) - 1 , dfs_flags);
+//						getchar();
+//					}
+//					else
+//						printf("%d \n" , border[i][j]);
+
+
+					if(All_count(0 , reason_array) - 1 >= dfs_flags){
+					/*
+						if(i == 15 && j == 26)
+							puts("hhek") , exit(0);
+						else
+							printf("%d %d\n" , i , j ) , getchar();
+					*/
 						
+						reason_array[i][j] = 10; // suppose !!!
+						
+						int result = check_if_right(i , j);
+						
+
+//						if(reason_array[14][23] == 9 && reason_array[14][26] == 9 && reason_array[15][23] == 9 && reason_array[15][24] == 10){
+//							printf("now suppose %d %d is 10\n" , i , j);
+//							printf("all complete result is %d\n" , result);
+//							getchar();
+//						}
+						
+
+						
+						
+						
+						
+						if(result == 0){
+
+							
 							dfs(i , j);
+							
+
+
         	    	    //    if(out_to_rand >= 10000){
         	    	      //      return;
         	                    //   }
@@ -928,6 +1040,8 @@ void dfs(int y , int x){
 							return;
 						}
 						else{
+							
+							
 //							printf("ERR1\n");
 //							print_array(reason_array);
 //							if(reason_array[15][8] == 9 && reason_array[14][8] == 10 && reason_array[15][16] == 9) puts("here") , Sleep(50000);
@@ -935,34 +1049,35 @@ void dfs(int y , int x){
 						}	
 					}
 					else{// fault
+
 //						puts("ERR2");
 //						printf("space %d flags = %d \n" , All_count(0 , reason_array) , dfs_flags);
 //						print_array(reason_array);
 //						if(reason_array[15][8] == 9 && reason_array[14][8] == 10 && reason_array[15][16] == 9) puts("here") , Sleep(50000);
 					}
-//					print_array(reason_array);
-//					if(i == 0 && j == 0) printf("dfs_flags is %d \n" , dfs_flags) , Sleep(50000);
-//					if(i == 4 && j ==0) Sleep(5000) , printf("FFFFF\n");
+
+
+
+					puts("into flags");
+
 					if(dfs_flags >= 1){
+
+						printf("%d %d supplse as flags\n" , i , j);
 						reason_array[i][j] = 9;			
 						dfs_flags--;
+						
+
 //						print_array(reason_array);
 						
 						int result;
 						result = check_if_right(i , j);
-						
-//						if(reason_array[12][7] == 9 && reason_array[15][8] == 9){
-//							printf("12 7 resu = %d\n\n" , result) ;
-//							printf("%d\n" , check_if_right(i , j));
-//							puts("");
-//							print_array("reason_array");
-//							Sleep(5000);
-//						}
+
 
 						if(result == 0){
 //							printf("\n%d %d  -- = falgs = %f \n" , i , j , dfs_flags);
 //							puts("^^^^ Success");
 							
+		
 							dfs(i , j);
                             
                         //    if(out_to_rand >= 10000){
@@ -983,42 +1098,84 @@ void dfs(int y , int x){
 											if(reason_array[k][l] == 9)
 												dfs_count[k][l].num++;
 									}
-									
+
 								dfs_flags++;
 								game_plat_possible ++;
 //								Sleep(20000);
 							//	return;
 							}
 							else{// == -1 || flags != 0
-								//puts("\n ERR3");
-							//	reason_array[i][j] = 10;
-									struct notation temC;
-							//		puts("CCC");
-									temC = C(All_count(0 , reason_array) , (int)dfs_flags);
-									if(result == 1 || result == 0){
-										for(k = 0 ; k < Y ; k++)
-											for(l = 0 ; l < X ; l++){
-												if(dfs_count[k][l].num >= 0)
-													if(reason_array[k][l] == 9){
-														addC( &dfs_count[k][l] , temC);
-													}
-													else if(neighbor_num(k , l) - Arround(k , l , "space" , array) - Arround(k , l , "flag" , array) == 0 && reason_array[k][l] == 0)//?
-														addC( &dfs_count[k][l] , temC);
+
+
+								if(result == 1 || result == 0){
+
+									int a , b;
+									int backup[Y][X];
+
+									//backup becuase the op below
+									for(a = 0 ; a != Y ; a++)
+										for( b = 0 ; b != X ; b++)
+											backup[a][b] = reason_array[a][b];
+
+									// transfer the 0 on border to 10
+
+									for(a = 0 ; a != Y ; a++)
+										for( b = 0 ; b != X ; b++){
+											if(reason_array[a][b] != 0){
+												if(Arround(a , b , "flag" , reason_array) == reason_array[a][b] && Arround(a , b , "space" , reason_array) != 0){
+													struct point_ * point;
+    												int which_pt = 0;
+    												while(point = rtnpt( a , b , which_pt++)){
+        												if(!reason_array[point->y][point->x]){
+            												reason_array[point->y][point->x] = 10;
+        												}
+        												free(point);
+    												}
+												}
 											}
-											printf("----------flags left %f---------\n\n\n" , dfs_flags);
-											left_mine_unknown = 1; // here !!
-											print_array("reason_array");	
-											puts("^^^^^^^^ final !!!\n\n\n");
-											game_plat_possible ++;
-									}
-									else{
-				//						puts("ERR3");
-				//						print_array("reason_array");
-									}
+										}
+
+
+								// start calclulate Combanation
+									struct notation temC;
+									temC = C(All_count(0 , reason_array) , (int)dfs_flags);
+									printf("A 0 %d ,flags %d\n" ,All_count(0 , reason_array) , (int)dfs_flags);
+									printf("add %f %d\n" , temC.num , temC.exp);
+//									getchar();
+									for(k = 0 ; k < Y ; k++)
+										for(l = 0 ; l < X ; l++){
+											if(dfs_count[k][l].num >= 0)
+												if(reason_array[k][l] == 9){
+													addC( &dfs_count[k][l] , temC);
+												}
+												else if(neighbor_num(k , l) - Arround(k , l , "space" , array) - Arround(k , l , "flag" , array) == 0 && reason_array[k][l] == 0){
+													if((k == 14 || k == 15)&&(l >= 24 && l <= 26))printf("=> %d %d \n" , k , l);
+													addC( &dfs_count[k][l] , temC);
+												}
+										}
+										printf("----------flags left %f---------\n\n\n" , dfs_flags);
+										left_mine_unknown = 1; // here !!
+										print_array("reason_array");
+										puts("^  ^^  ^ final !!!\n\n\n");
+										game_plat_possible ++;
+									//	print_array("dfs_count");
+									//	getchar();
+									
+									//recover reason_array
+									for(a = 0 ; a != Y ; a++)
+										for( b = 0 ; b != X ; b++)
+											reason_array[a][b] = backup[a][b];
+								
+								}
+								else{
+										puts("ERR3.1");
+								//		print_array("reason_array");
+								//		result = check_if_right(i , j);
+								}
 
 				//					print_array(reason_array);
 //								if(reason_array[15][8] == 9 && reason_array[14][8] == 10 && reason_array[15][16] == 9) puts("here") , Sleep(50000);
-									dfs_flags++;
+								dfs_flags++;
 							}
 						}
 						
@@ -1030,53 +1187,71 @@ void dfs(int y , int x){
 							Sleep(20000);
 							exit(0);
 						}
-					/*
-//						if(history == 0){
-							for(k = 0 ; k < Y ; k++)
-								for(l = 0 ; l < X ; l++){
-									if(dfs_count[k][l] != -1)
-										dfs_count[k][l]++;
-								}
-							printf("\nflags = %f should be zero while on %d %d stop\n\n",dfs_flags , i , j);
-							print_array(reason_array);
-//						}*/
 					}
 
 					reason_array[i][j] = 0;//??
+
 					return;
 				}
 			}			
 		}
 	}
-//	int add_combination;
-//	unsigned long long float Czero , Cflag;
-//	Czero = All_count(space , reason_array);
-//	Cflag = dfs_flags;
+
 //	puts("RRR");
+	int a , b;
+	int backup[Y][X];
+	//backup becuase the op below
+	for(a = 0 ; a != Y ; a++)
+		for( b = 0 ; b != X ; b++)
+			backup[a][b] = reason_array[a][b];
+
+	// transfer the 0 on border to 10
+
+	for(a = 0 ; a != Y ; a++)
+		for( b = 0 ; b != X ; b++){
+			if(reason_array[a][b] != 0){
+				if(Arround(a , b , "flag" , reason_array) == reason_array[a][b] && Arround(a , b , "space" , reason_array) != 0){
+					struct point_ * point;
+					int which_pt = 0;
+					while(point = rtnpt( a , b , which_pt++)){
+						if(!reason_array[point->y][point->x]){
+							reason_array[point->y][point->x] = 10;
+						}
+						free(point);
+					}
+				}
+			}
+		}
+
+	// start calclulate Combanation
 	struct notation temC;
 	temC = C(All_count(0 , reason_array) , (int)dfs_flags);
-//	puts("afterC");
-//?
-//	int result = check_if_right(-1 , -1);
-//	if(result == 1 || result == 0){
-		for(k = 0 ; k < Y ; k++)
-			for(l = 0 ; l < X ; l++){
-				if(dfs_count[k][l].num != -1)
-					if(reason_array[k][l] == 9)
-						addC( &dfs_count[k][l] , temC);
-					if(neighbor_num(k , l) - Arround(k , l , "space" , array) - Arround(k , l , "flag" , array) == 0)
-						addC( &dfs_count[k][l] , temC);
-			}
-		printf("----------flags left %f---------\n\n\n" , dfs_flags);
-		left_mine_unknown = 1;
-		print_array("reason_array");
-		puts("^^^^^^^^ final !!!\n\n\n");
-		game_plat_possible ++;
-//	}
-//	else{
-//	   puts("ERR final");
-//	   exit(0);
-//	}
+	printf("A 0 %d ,flags %d\n" ,All_count(0 , reason_array) , (int)dfs_flags);
+	printf("add %f %d\n" , temC.num , temC.exp);
+//	getchar();
+	for(k = 0 ; k < Y ; k++)
+		for(l = 0 ; l < X ; l++){
+			if(dfs_count[k][l].num >= 0)
+				if(reason_array[k][l] == 9){
+					addC( &dfs_count[k][l] , temC);
+				}
+				else if(neighbor_num(k , l) - Arround(k , l , "space" , array) - Arround(k , l , "flag" , array) == 0 && reason_array[k][l] == 0){
+					if((k == 14 || k == 15)&&(l >= 24 && l <= 26))printf("=> %d %d \n" , k , l);
+					addC( &dfs_count[k][l] , temC);
+				}
+		}
+	printf("----------flags left %f---------\n\n\n" , dfs_flags);
+	left_mine_unknown = 1; // here !!
+	print_array("reason_array");
+	puts("^      ^ final !!!\n\n\n");
+	game_plat_possible ++;
+
+	//recover reason_array
+	for(a = 0 ; a != Y ; a++)
+		for( b = 0 ; b != X ; b++)
+			reason_array[a][b] = backup[a][b];
+
+
 	return ;
 }
 
@@ -1094,13 +1269,15 @@ int check_if_right(int y , int x){
 			    tem = Arround(point->y , point->x , "flag" , reason_array);
 			    pem = Arround(point->y , point->x , "space" , reason_array);
 			    if(reason_array[point->y][point->x] < tem){
-//                  printf("%d %d is %d while F is %d\n" , point->y , point->x , reason_array[point->y][point->x] , tem);
-//					print_array("reason_array");
+	                printf("%d %d is %d while F is %d\n" , point->y , point->x , reason_array[point->y][point->x] , tem);
+					print_array("reason_array");
+
 					return -1;
 			    }
                 else if(reason_array[point->y][point->x] > tem && pem == 0){
-//				    printf("%d %d is %d while ArroundF is %d space is %d\n" , point->y , point->x , reason_array[point->y][point->x] ,  tem , pem);
-//					print_array("reason_array");
+				    printf("%d %d is %d while ArroundF is %d space is %d\n" , point->y , point->x , reason_array[point->y][point->x] ,  tem , pem);
+					print_array("reason_array");
+
 					return -1;
 			    }
 		    }
@@ -1112,6 +1289,8 @@ int check_if_right(int y , int x){
 				value = 0;
 		    }
 		    else{
+		    	puts("need flags while no space left");
+		    	print_array("reason_array");
 			    return -1;
 		    }
 		}
@@ -1645,6 +1824,11 @@ void print_array(char matrix_name[]){
                 for(j = 0 ;  j != X ; j ++)
                     tem_array[i][j] = reason_array[i][j];
         }
+		else if(!strcmp(matrix_name , "border")){// matrix_one_D = reason_array;
+            for(i = 0 ; i != Y ; i ++)
+                for(j = 0 ;  j != X ; j ++)
+                    tem_array[i][j] = border[i][j];
+        }
 		else printf("no such array named %s\n" , matrix_name) , exit(0);
 				 
 		for(i = 0;i<Y ; i++){
@@ -1840,7 +2024,7 @@ void Click(int x , int y  , char *mod){
         Sleep(90);
 	}
 	
-	Sleep(20);
+	Sleep(10);
 	
  if(add_speed){ 	
   	if(y >= 0 && y < Y && x >= 0 && x < X){
