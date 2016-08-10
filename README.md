@@ -9,7 +9,6 @@ compiler flags:
 
 library route:
 
-              C:\Program Files (x86)\Dev-Cpp\MinGW64\lib32
               C:\Program Files (x86)\Dev-Cpp\MinGW64\x86_64-w64-mingw32\lib32
 include route:
 
