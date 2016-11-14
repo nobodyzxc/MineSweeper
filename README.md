@@ -1,6 +1,8 @@
 # MineSweeper-Solver
 A solver for MS minesweeper(win8 version)
 
+https://mega.nz/#!1IM1GYQY!IKM6qN3xbNPLwMYh_BM5JtfJrIo_njUGcLu9dT1IwW4 (the game installer on my cloud)
+
 compiler version : TDM-GCC 4.9.2 32-bit Realease
 
 compiler flags: 
