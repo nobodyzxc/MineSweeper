@@ -1,7 +1,7 @@
-# MineSweeper-Solver
+# MineSweeperProject
 A series of practice about MineSweeper.
 
-It contains two part.
+It contains two parts.
 
     1.Make a MineSweeper game.
 
@@ -9,7 +9,7 @@ It contains two part.
         CURSES ?
         GUI    ?
 
-    2.Make a Solver to play it.
+    2.Make a Solver to solve it.
 
         How to -> DFS ?
                   linear algebra ?
