@@ -1,5 +1,5 @@
 # MineSweeperProject
-A series of practice about MineSweeper.
+A series of practices about MineSweeper.
 
 It contains two parts.
 
