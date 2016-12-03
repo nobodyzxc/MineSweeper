@@ -10,6 +10,7 @@ int ArroundNum(int , int , int);
 int CheckIfWin(int , int);
 void GameOver(int , int , int);
 int **mine;
+/* recursive open */
 void expand(int , int , int);
 int main(void){
 	struct timeb timeBuf;
@@ -34,7 +35,6 @@ int main(void){
 	for(i = 0; i != matrix; i++ , tmp += matrix)
 		mine[i] = tmp;
 
-	puts("malloc over");
 
 	for(i = 0; i < matrix ; i++)
 		for(j = 0; j < matrix ; j++)
@@ -47,7 +47,6 @@ int main(void){
 		while(mine[ (y = rand()%matrix) ][ (x = rand()%matrix) ] );
 		mine[y][x] = 1;
 	}
-	puts("rand over");
 
 //	DebugNum(matrix);
 	
