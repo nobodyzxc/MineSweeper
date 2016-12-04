@@ -15,7 +15,8 @@ void expand(int , int);
 #define QUES_MARK       (1 << 1)
 #define FLAG            (1 << 2)
 #define OPEN            (1 << 3)
-#define isNon(x)        ((!hasBOMB(x)) && (!hasFLAG(x)) && (!hasQUES(x)))
+#define isNon(x)        ((!hasBOMB(x)) && (!hasFLAG(x)) && \
+                            (!hasQUES(x)) && (!hasOPENED(x)))
 #define hasBOMB(x)      (x & BOMB)
 #define hasQUES(x)      (x & QUES_MARK)
 #define hasFLAG(x)      (x & FLAG)

@@ -26,7 +26,7 @@ void peek(int fd);
 void recvPlayer(void *clt_idx);
 
 int main(void){
-    new_host(1 , 8888, recvPlayer);
+    new_host(2 , 8888, recvPlayer);
     return 0;
 }
 
@@ -48,14 +48,21 @@ void recvPlayer(void *clt_idx){
 		else if(len >= 1){
             char arg[5][100];
             int i = 0 , ptr = 0 , n = 0;
-            while(~sscanf(buffer + ptr , "%s%n" , arg[i++] , &n) && i < 5) ptr += n;
-            if(!strcmp("map" , arg[0])) 
+            while(~sscanf(buffer + ptr , "%s%n" , arg[i] , &n) && i < 5) ptr += n , i++;
+            printf("argc = %d\n" , i);
+            if(!strcmp("map" , arg[0]) && i == 4) 
                 gameStart(atoi(arg[1]) , atoi(arg[2]) , atoi(arg[3]));
-            else if(!strcmp("open" , arg[0])) run('s' , atoi(arg[1]) , atoi(arg[2]));
-            else if(!strcmp("flag" , arg[0])) run('f' , atoi(arg[1]) , atoi(arg[2]));
-            else if(!strcmp("ques" , arg[0])) run('?' , atoi(arg[1]) , atoi(arg[2]));
+            else if(!strcmp("open" , arg[0]) && i == 3) run('s' , atoi(arg[1]) , atoi(arg[2]));
+            else if(!strcmp("flag" , arg[0]) && i == 3) run('f' , atoi(arg[1]) , atoi(arg[2]));
+            else if(!strcmp("ques" , arg[0]) && i == 3) run('?' , atoi(arg[1]) , atoi(arg[2]));
             else if(!strcmp("look" , arg[0])) peek(G_CLIENT[idx].fd);
             else printf("unknown command %s\n" , buffer);
+            printMap(1);
+            if(CheckIfWin()){
+                free(G_MAP);
+                puts("Find All Land Mines !");
+                break;
+            }
 		}
 		else{
 			//connect error
@@ -81,7 +88,7 @@ void peek(int fd){
             else if(hasQUES(G_MAP[i][j])) apd = '?';
             else if(hasNoMark(G_MAP[i][j])) apd = 'O';
 			else if(hasOPENED(G_MAP[i][j])) apd = ArroundNum(i , j) + '0';
-			sprintf(msgStr , "%s%c ", apd);
+			sprintf(msgStr , "%s%c ", msgStr , apd);
         }
     }
     send(fd , msgStr , sizeof(msgStr) , 0);

@@ -1,3 +1,3 @@
-# MineSweeper
+# MineSweeperGame
 
    some MS games. 

@@ -16,7 +16,7 @@ void GameOver(int , int);
 /* recursively open */
 void expand(int , int);
 
-int **G_MAP , G_BOMBCOUNT , G_MAPLN , G_MAPWD;
+int **G_MAP = NULL , G_BOMBCOUNT , G_MAPLN , G_MAPWD;
 int **gameStart(int mapLN , int mapWD , int bomb_num){
 //int main(void){
 //    int mapLN = 0 , mapWD , bomb_num;
@@ -105,10 +105,15 @@ int **gameStart(int mapLN , int mapWD , int bomb_num){
 }
 
 void printMap(int gameState){
+    if(!G_MAP) return;
 	int i , j;
-	printf("    ");
-	for(i = 0; i < G_MAPLN ; i++)
-		printf("%d " , i);
+    /* clean previous map */ 
+    for(i = 0 ; i < G_MAPLN + 5 ; i++)
+    	printf("\033[1A\033[K");
+
+    printf("    ");
+	for(i = 0; i < G_MAPWD ; i++)
+		printf("%d " , i % 10);
 	puts("");
 
 	printf("    ");
@@ -117,11 +122,13 @@ void printMap(int gameState){
 	puts("");
 	
 	for(i = 0; i < G_MAPLN ; i++){
-		printf("%d | " , i);
+		printf("%d | " , i % 10);
 		for(j = 0; j < G_MAPWD ; j++){
-            if(hasFLAG(G_MAP[i][j]))
+			if(G_MAP[i][j] == 17)
+				printf("# ");
+            else if(hasFLAG(G_MAP[i][j]))
 				printf("%c " , 
-                        gameState == 0 && hasBOMB(G_MAP[i][j]) ? 'X' : 'F');
+                        gameState == 0 && (!hasBOMB(G_MAP[i][j])) ? 'X' : 'F');
             else if(hasQUES(G_MAP[i][j]))
 				printf("%c " , 
                         gameState == 0 && hasBOMB(G_MAP[i][j]) ? '*' : '?');
@@ -134,10 +141,8 @@ void printMap(int gameState){
 				else
 					printf("%d ",ArroundNum(i , j));
 			}
-			else if(G_MAP[i][j] == 9)
-				printf("# ");
 		}
-		printf("| %d", i);
+		printf("| %d", i % 10);
 		puts("");
 	}
 	
@@ -147,14 +152,15 @@ void printMap(int gameState){
 	puts("");
 
 	printf("    ");
-	for(i = 0; i < G_MAPLN ; i++)
-		printf("%d " , i);
+	for(i = 0; i < G_MAPWD ; i++)
+		printf("%d " , i % 10);
 	puts("");
 
 	return;
 }
 
 void run(char mod , int y , int x){
+    if(!G_MAP) return;
     if(hasOPENED(G_MAP[y][x])) return;    
 	if(mod == 's'){
 		if(isNon(G_MAP[y][x])){
@@ -200,6 +206,7 @@ void run(char mod , int y , int x){
 	return;
 }
 void expand(int y , int x){
+    if(!G_MAP) return;
 	if(ArroundNum(y , x))
 		return;
     int dy[3] = {1 , 0 , -1} , dx[3] = {1 , 0 , -1};
@@ -235,6 +242,7 @@ int inRange(int y , int x){
 }
 
 int ArroundNum(int y , int x){
+    if(!G_MAP) return 0;
     if(!inRange(y , x)) return 0;
 	int rtn = 0 , i , j , sy , sx;
     int dy[3] = {1 , 0 , -1} , dx[3] = {1 , 0 , -1};
@@ -250,14 +258,15 @@ int ArroundNum(int y , int x){
 }
 
 bool CheckIfWin(void){
+    if(!G_MAP) return false;
 	int i , j;
 	for(i = 0; i < G_MAPLN; i++)
 		for(j = 0; j < G_MAPWD; j++){
 			if(hasQUES(G_MAP[i][j]))
-				return false;
+                return false;
 			if(isNon(G_MAP[i][j]))
 				return false;
-			if(hasFLAG(G_MAP[i][j]) && hasBOMB(G_MAP[i][j]))
+			if(hasFLAG(G_MAP[i][j]) && (!hasBOMB(G_MAP[i][j])))
 				return false;	
 		}
 
@@ -277,12 +286,13 @@ bool CheckIfWin(void){
 }
 
 void GameOver(int y , int x){
+    if(!G_MAP) return;
 	int i , j ;
 	for(i = 0; i < G_MAPLN + 6 ; i++){
 		printf("\033[1A");
 		printf("\033[K");
 	}	
-	G_MAP[y][x] = 9;
+	G_MAP[y][x] = 17;
 	printMap(0);	
 	free(G_MAP);
 	puts("Game Over");

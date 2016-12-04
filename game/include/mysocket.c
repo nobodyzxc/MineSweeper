@@ -71,8 +71,10 @@ int new_host(int clt_num , int port, void (*recvmsg)(void *idx)){
 		if(G_OL_COUNT == clt_num){
 			close(G_CLIENT[idx].fd);
 			G_CLIENT[idx].fd = -1;
+            puts("err");
 		}
 		else{ //so i use else here
+            puts("connected");
 			if(pthread_create(&G_CLIENT[idx].td , NULL , (void *)recvmsg , &idx)){
 				printf("create client[%d] thread failed\n",idx);
 				close(G_CLIENT[idx].fd);
@@ -113,6 +115,8 @@ int cnt_host(int port , char IP[] , void (*recvmsg)(void *svr_fd)){
 		printf("create pthread error!\n");
 		exit(1);
 	}
+    /* wait a sec to pass serverfd into recvmsg */ 
+    sleep(1);
 
 	return serverfd;
 }

@@ -12,6 +12,8 @@ struct _client{
 
 int new_host(int clt_num , int PORT, void (*recvmsg)(void *clt_idx));
 int cnt_host(int PORT , char IP[] , void (*recvmsg)(void *svr_fd));
+int combsys(char *cmd , unsigned int cmd_t , char *format , ... );
+ssize_t combsend(int fd , char *msg , unsigned int msg_t , char *format , ... );
 
 /* referencing for func pointer above */
    void server_recvmsg(void *clt_idx);
