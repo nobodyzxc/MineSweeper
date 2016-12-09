@@ -14,4 +14,4 @@ It contains two parts.
         How to -> DFS ?
                   linear algebra ?
 
-    Most important of all , I want to provide a platform to write solver and compare them.
+    Most important of all , I want to provide a platform to write solvers and compare them.
