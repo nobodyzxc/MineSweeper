@@ -5,11 +5,13 @@ It contains two parts.
 
     1.Make a MineSweeper game.
 
-        Socket ?        
+        Socket ? I want to make a game server that supports multiple play.
         CURSES ?
-        GUI    ?
+        GUI    ? 
 
     2.Make a Solver to solve it.
 
         How to -> DFS ?
                   linear algebra ?
+
+    Most important of all , I want to provide a platform to write solver and compare them.
