@@ -17,4 +17,4 @@ It contains two parts.
     Most important of all , I want to provide a platform to write solvers and compare them.
 
 Demo:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/K_UHqMTmWNs" frameborder="0" allowfullscreen></iframe>
+[![solver demo](https://i.ytimg.com/vi/K_UHqMTmWNs/hqdefault.jpg?custom=true&w=196&h=110&stc=true&jpg444=true&jpgq=90&sp=68&sigh=Wx9Jcta129mP1S3wIcIRY3z43D4)](https://www.youtube.com/embed/K_UHqMTmWNs)
