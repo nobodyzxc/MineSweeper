@@ -7,7 +7,7 @@ It contains two parts.
 
         Socket ? I want to make a game server that supports multiple play.
         CURSES ?
-        GUI    ? 
+        GUI    ?
 
     2.Make a Solver to solve it.
 
@@ -15,3 +15,6 @@ It contains two parts.
                   linear algebra ?
 
     Most important of all , I want to provide a platform to write solvers and compare them.
+
+Demo:
+<iframe width="560" height="315" src="https://www.youtube.com/embed/K_UHqMTmWNs" frameborder="0" allowfullscreen></iframe>
