@@ -2,7 +2,7 @@
 
 The code is very naive.
 
-Because I just start learning coding for half year when I made the solver.
+Because I just started learning coding for half year when I made the solver.
 
 Wait to rebuid it.
 
