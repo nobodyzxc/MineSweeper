@@ -1,7 +1,5 @@
 # MineSweeperSolver
 
-GameClt.c:
+GameClt.c: An interface to implement solver.
 
-    Given a interface to implement solver.
-    The files in the directory is the template.
-    The files in "series" is the solver for MSMS(win8).
+The files in "series" is the solver for M$MS(win8).

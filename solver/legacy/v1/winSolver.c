@@ -1,13 +1,14 @@
 #include<stdio.h>
-#include<windows.h>
-#include<Winuser.h>
-#include<Windows.h>
-#include<process.h>
-#include<string.h>
 #include<stdlib.h>
+#include<string.h>
 #include<signal.h>
-#include<time.h>
 #include<memory.h>
+#include<time.h>
+
+#include<windows.h>
+#include<process.h>
+
+
 #define Y 16
 #define X 30
 #define BoxLength 35
@@ -21,8 +22,7 @@ struct notation{
     int exp;
 };
 struct point_{
-    int y;
-    int x;
+    int y , x;
 };
 int direct(int);
 int direct_single(int , int);
@@ -83,11 +83,6 @@ struct point_* rtnpt(int y , int x  , int which){
     }
 }
 
-void thread_open_game(void *p){
-    system("C:\\\"Program Files\"\\\"Microsoft Games\"\\Minesweeper\\minesweeper.exe");
-    return;
-}
-
 POINT pt;
 HWND wndPane  , wndPaneParent , wndGameLost , wndGameWon , wndconsole;
 HDC hdc ;
@@ -107,124 +102,9 @@ int WIN_NUM = 0;
 int LOSE_NUM = 0;
 
 
-void open_window(char *wnd){
-    static char nowwin = '?';
-
-    if(!strcmp(wnd , "minesweeper")){
-        if(nowwin != 'm'){
-            ShowWindow(wndPaneParent , 2);
-            ShowWindow(wndPaneParent , 3);
-            nowwin = 'm';
-        }
-    }
-    else if(!strcmp(wnd , "console")){
-        if(nowwin != 'c'){
-            ShowWindow(wndconsole , 2);
-            ShowWindow(wndconsole , 3);
-            nowwin = 'c';
-        }
-    }
-    else{
-        puts(wnd);
-        puts("no such window");
-        exit(0);
-    }
-    Sleep(1000);
-    return;
-}
-
-int main(void){
-
-    Sleep(3000);
-    srand(time(NULL));
-    int times;
-    //wndPane = FindWindow(PChar('Static'), NULL); //FindWindow( 0,"Minesweeper" );
-    wndconsole = GetConsoleWindow();
-    //http://s.epb.idv.tw/han-shi-ku/windows/034findwindowyugetwindow
-    wndPaneParent = FindWindow(NULL , "Minesweeper");
-
-    if(wndPaneParent == NULL) {
-        puts("No such windows\nopen game !!");
-
-        char Data[10];
-        _beginthread(thread_open_game , 0 , (void *)Data);
-        Sleep(3000);
-        wndPaneParent = FindWindow(NULL , "Minesweeper");
-        puts("finish get parent");
-        if(wndPaneParent == NULL) puts("can't open minesweeper") , exit(0);
-    }
-
-
-    wndPane = GetWindow( wndPaneParent , 5);
-
-
-    if(wndPane == NULL){
-        puts("can not get child wnd of minesweeper !");
-        exit(0);
-    }
-    else{
-        puts("get child successfully");
-    }
-
-    hdc = GetDC(wndPane);
-    if(hdc == NULL) {
-        puts("No such hdc");
-        return 0;
-    }
-
-    open_window("minesweeper");
-
-    puts("open over");
-
-    MouseSetting();
-
-
-    for(times = 0 ; times < 2 ; times++){
-
-        Click(999 , 999 , "left");
-        int i , j , times;
-        int r , g , b;
-        for(i = 0 ; i< Y ; i++){
-            for(j = 0 ; j<X ; j++){
-                array[i][j] = 0;
-                reason_array[i][j] = 0;
-                button[i][j] = 0;
-                border[i][j] = 0;
-            }
-        }
-
-
-        if(check_if_win()) continue;
-
-
-
-        flags = (float) (FLAGNUM - All_count(9 , array));
-
-        analyze_screen();
-
-        if(1)
-            Gaming();
-        if(0){
-            resuppose();
-            print_array("dfs_count") ;
-        }
-
-        print_array("array");
-
-        puts("over");
-    }
-
-    printf("TOTAL GAME NUMBER = %d\nWIN_NUM = %d\nLOSE_NUM = %d \n" , times , WIN_NUM , LOSE_NUM);
-
-    return 0;
-}
 void Gaming(void){
     int i , j , modify = 0;
-
-    puts("gaming");
-
     while(1){
-
         int pass = 1;
         if(All_count(0 , array) == Y * X && pass){
             puts("all zero == Y*X");
@@ -1286,577 +1166,374 @@ void CLKRAND(void){
 }
 
 
-void analyze_screen(void){
 
-    int i , j;
 
+
+
+int All_count(int what , int matrix[][X]){
+    int i , j , num = 0;
+    for(i = 0; i < Y ; i++)
+        for(j = 0; j < X; j++)
+            if(what == 'd'){
+                if(matrix[i][j] == 0)
+                    if(neighbor_num(i , j) - Arround(i , j , "space" , array) - Arround(i , j , "flag" , array) != 0)
+                        num++;
+            }
+            else if(matrix[i][j] == what){
+                num++;
+            }
+    return num;
+}
+int Arround(int y , int x , char *mod , int matrix[][X]){
+    int destination;
+    int num = 0;
+    if(!strcmp(mod , "flag")) destination = 9;
+    else if(!strcmp(mod , "space")) destination = 0;
+    else if(!strcmp(mod , "clear")) destination = 10;
+    else{
+        puts("Arround err");
+        exit(0);
+    }
+
+    struct point_ * point;
+    int which_pt = 0;
+    while(point = rtnpt( y , x , which_pt++)){
+        if(matrix[point->y][point->x] == destination){
+            num++;
+            //	if(!strcmp("clear" ,  mod) )printf("%d %d clear\n" , point->y , point->x);
+        }
+        free(point);
+    }
+
+    return num;
+}
+int check_if_win(void){
+    //	analyze_screen();
+
+    print_array("array");
+    if(flags <= 2 && flags > 0){
+        puts("sleep 2s");
+        Sleep(2000);
+    }
+    int pass = 0;
+    int i , j , k;
+    int r , g, b;
     hdc = GetDC(wndPane);
+    wndGameLost = FindWindow(NULL , "Game Lost");
+    if(wndGameLost != NULL){
+        LOSE_NUM++;
+        puts("game over");
+        //		Sleep(10000);
+        //        exit(0);
+        Sleep(3000);
+        exit(0);
+        Click(-100 , -100 , "left");
+        Sleep(1500);
+        return -1;
+    }
 
-    for(i = 0 ; i < Y ; i++){//
-        for(j = 0 ; j < X ; j++){
-            analyze_single(i , j);
+    wndGameLost = FindWindow(NULL , "Game Won");
+    if(wndGameLost != NULL){
+        puts("game won");
+        WIN_NUM++;
+        //		Sleep(10000);
+        //		exit(0);
+        Sleep(3000);
+        Click(100 , 100 , "left");
+        Sleep(1500);
+        return 1;
+    }
+    return 0;
+    /*
+       for(i = 16 ; i < 18 ; i++){//-4
+       for(j = 24 ; j < 27 ; j++){
+       for(k = -30 ; k < -5 ; k++){// 10 27
+       if(array[i][j] == 0){
+       COLORREF color = GetPixel(hdc, POX + j * BoxLength + k , POY + i * BoxLength );//  -3     +3   origin i+6
+       r = GetRValue(color);
+       g = GetGValue(color);
+       b = GetBValue(color);
+       if(((i == 17)&& (j == 25))){
+       if(k == -22 || k == -21 || k ==-14 || k == -13 || k == -12)
+       if(r > 100 && g > 100 && b > 100)
+       pass++;
+    //								else
+    //									printf("%2d %2d   %d %d %d \n",i,j,r,g,b);
+    //									if(r > 100) printf("%d k\n" ,k );
+    }
+    }
+    }
+    }
+    }
+    if(pass == 5 && flags < 3){
+    puts("win ^^");
+    exit(0);
+    }
+    //	else
+    //		printf("%d pass\n" , pass);
+    //	Sleep(100000);
+    return ;
+    */
+}
+
+void print_array(char matrix_name[]){
+    int i , j;
+    //	void *matrix_one_D; //array[Y][X]
+    //	int *matrix_two_D;
+    int tem_array[Y][X];
+    if(!strcmp(matrix_name,"dfs_count")){
+        for(i = 0;i<Y ; i++){
+            for(j = 0 ; j < X ; j++){
+                if(dfs_count[i][j].num == -1)
+                    printf("      ");
+                else if(neighbor_num(i , j) - Arround(i , j , "space" , array) - Arround(i , j , "flag" , array) == 0)//matrix[i][j] == -2)
+                    printf("%1.0f?%2d " , dfs_count[i][j].num , dfs_count[i][j].exp);
+                else
+                    printf("%1.0fe%2d " , dfs_count[i][j].num , dfs_count[i][j].exp);
+            }
+            puts("");
+        }
+    }
+    else{
+        if(!strcmp(matrix_name , "array")){
+            // matrix_one_D = array;
+            for(i = 0 ; i != Y ; i ++)
+                for(j = 0 ;  j != X ; j ++)
+                    tem_array[i][j] = array[i][j];
+        }
+        else if(!strcmp(matrix_name , "reason_array")){// matrix_one_D = reason_array;
+            for(i = 0 ; i != Y ; i ++)
+                for(j = 0 ;  j != X ; j ++)
+                    tem_array[i][j] = reason_array[i][j];
+        }
+        else if(!strcmp(matrix_name , "border")){// matrix_one_D = reason_array;
+            for(i = 0 ; i != Y ; i ++)
+                for(j = 0 ;  j != X ; j ++)
+                    tem_array[i][j] = border[i][j];
+        }
+        else printf("no such array named %s\n" , matrix_name) , exit(0);
+
+        for(i = 0;i<Y ; i++){
+            for(j = 0 ; j < X ; j++){
+                //				matrix_two_D = (matrix_one_D[i]);
+                if(tem_array[i][j] == 9)
+                    printf("F ");
+                else if(tem_array[i][j] == 10 || tem_array[i][j] == -1)
+                    printf("  ");
+                else
+                    printf("%d " , tem_array[i][j]);
+            }
+            puts("");
         }
     }
 
-    //	for(i = 0 ; i < 1200 ; i ++){
-    //		COLORREF color0 = GetPixel(hdc, 155 + i , 75 );
-    //	COLORREF color0 = GetPixel(hdc, 242 , 75 );
-    //			r = GetRValue(color0);
-    //			g = GetGValue(color0);
-    //			b = GetBValue(color0);
-    //		if( b < g && b < r){
-    //	printf("%d\n" , color0);
-    //			printf("%d 格 \n" , i / 35);
-    //			if (i/35 >= 30 ) break;
-    //	0		printf("x = %d y = %d , r %d g %d b %d \n", 155+i , 75 ,r,g,b);
-    //		}
-    //	}
-    return;
+    puts("\n");
+    return ;
 }
+//int mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+//const int MOUSEEVENTF_MOVE = 0x0001;        //移?鼠?
+//public const int MOUSEEVENTF_LEFTDOWN = 0x0002;    //模擬鼠標左鍵按下
+//public const int MOUSEEVENTF_LEFTUP = 0x0004;      //模擬鼠標左鍵抬起
+//const int MOUSEEVENTF_RIGHTDOWN = 0x0008;  0 //模擬鼠標右鍵按下
+//const int MOUSEEVENTF_RIGHTUP = 0x0010;     //模擬鼠標右鍵抬起
+//const int MOUSEEVENTF_MIDDLEDOWN = 0x0020;  //模擬鼠標中鍵按下
+//const int MOUSEEVENTF_MIDDLEUP = 0x0040;    //模擬鼠標中鍵抬起
+//const int MOUSEEVENTF_ABSOLUTE = 0x8000;    //標示是否采用絕對坐標
+void MouseSetting(void){
 
+    pt.x = MOX;
+    pt.y = MOY;
 
-int analyze_single(int i , int j){
+    mDown.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
+    mDown.time=0;
+    mDown.dwExtraInfo=0;
 
-    int r , g, b;
-    int k , result = 0;
+    // 指定滑鼠的位置
+    mDown.dy=pt.y;
+    mDown.dx=pt.x;
+    mDown.dwFlags=MOUSEEVENTF_LEFTDOWN; // 設定左按鍵向下
+    //要用的時候再設定
 
-    for(k = 10 ; k < 29 ; k++){
-        if(array[i][j] == 0 || array[i][j] == 7 || array[i][j] == 8){//|| array[i][j] == 10){ 怪怪的
-            //   ^ ^ v v change position !! would be wrong
-            //       for(k = 10 ; k < 29 ; k++){// 10 27
+    // 建構 inputMouseDown  事件
 
-            COLORREF color = GetPixel(hdc, POX + j * BoxLength + k , POY + i * BoxLength + 13);//origin i+6 // later + 13
-            r = GetRValue(color);
-            g = GetGValue(color);
-            b = GetBValue(color);
+    inputMouseDown_L.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
+    inputMouseDown_L.mi=mDown;// 指定 滑鼠屬性結構
 
-            if(0){
-                if((i ==5 && j == 1)){
-                    printf("%2d %2d   %d %d %d \n",i,j,r,g,b);
-                }
-            }
+    ////////////////////////
 
-            if(1){
-                if(k == 28 && r > 150 && g > r && (g - r <= 20) && array[i][j] != 3
-                        && array[i][j] != 7 && array[i][j] != 8 ){ // ?? is it correct ?? k == 26
-                    array[i][j] = 10;
-                    result = 10;
-                    button[i][j] = 1;
-                    //    printf("%d %d assume 10\n" , i , j );
-                    //    Sleep(60000);
+    mUp.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
+    mUp.time=0;
+    mUp.dwExtraInfo=0;
 
-                    break;
-                }
-                if(r >= 185 && g <= 60 && b <= 60){ // g b < 15 //r200
-                    //			printf("%2d %2d = F1  %d %d %d \n",i,j,r,g,b);
-                    array[i][j] = 9;
-                    result = 9;
-                    break;
-                }
-                //		if((i == 13 && j == 22)) puts("test");
-                if(r >= b || g >= b){
-                    //						if(i == 1 && j == 20) printf("%2d %2d = ??  %d %d %d \n",i,j,r,g,b);
-                    if(r > g && r >=b ){
-                        //				if(i == 4 && j == 2) printf("%2d %2d = ??  %d %d %d \n",i,j,r,g,b);
-                        if(r > 135){ // 140
-                            //					if(i == 4 && j == 2) printf("%2d %2d = ??  %d %d %d \n",i,j,r,g,b);
-                            if(r >= 187 && g < 30 && b < 30){ // g b > 200 r 200  (185 60 60
-                                //					 	printf("%2d %2d = F2  %d %d %d \n",i,j,r,g,b); //?? if just r > 200 ?
-                                array[i][j] = 9;
-                                result = 9;
-                            }
-                            else{
-                                COLORREF color_check = GetPixel(hdc, POX + j * BoxLength + k + 3 , POY + i * BoxLength + 13);// k+4 ~~ to k+3
-                                int r_check = GetRValue(color_check);
-                                int g_check = GetGValue(color_check);
-                                int b_check = GetBValue(color_check);
-                                //							if(i == 1 && j == 20) printf("%2d %2d = @@  %d %d %d \n",i,j,r_check,g_check,b_check);
-                                if(r_check  >= 187 && g_check < 30 && b_check < 30){//190 && r_check > g_check && r_check > b_check){//test >=200 r 200
-                                    //							printf("%2d %2d = F3  %d %d %d // %d %d %d \n",i,j,r,g,b,r_check , g_check , b_check);
-                                    array[i][j] = 9;
-                                    result = 9;
-                                }
-                                else if(r_check < 140){
-                                    //							printf("%2d %2d = 5   %d %d %d @@ %d %d %d \n",i,j,r,g,b, r_check , g_check , b_check);
-                                    array[i][j]	= 5;
-                                    result = 5;
-                                }
-                                else if( g_check < 60 && b_check < 60){
-                                    //							printf("%2d %2d=3|8|7 %d %d %d @@ %d %d %d \n",i,j,r,g,b, r_check , g_check , b_check);
-                                    int red_arround_nums_num = neighbor_num(i , j) - Arround(i , j , "flag" , array) - Arround(i , j , "space" , array);
-                                    /*								if(i == 5 &&  j == 1){
-                                                                    printf("sss  %d\n" , red_arround_nums_num);
-                                                                    printf("nn %d af %d as %d",neighbor_num(i , j) , Arround(i , j , "flag" , array) , Arround(i , j , "space" , array));
-                                                                    Sleep(5000);
-                                                                    }*/
-                                    if(red_arround_nums_num > 1 && Arround(i , j , "flag" , array) <= 3){//<= 3
-                                        array[i][j] = 3;
-                                        result = 3;
-                                    }
-                                    else if(red_arround_nums_num == 1){
-                                        //		color_check = GetPixel(hdc, POX + j * BoxLength + 23 , POY + i * BoxLength + 23);// k+4 ~~ to k+3
-                                        //		r_check = GetRValue(color_check);
-                                        //		g_check = GetGValue(color_check);
-                                        //		b_check = GetBValue(color_check);
-                                        //		if(r_check > g_check && r_check > b_check && r_check > 150 && g_check < 30 && b_check < 30){
-                                        //			array[i][j] = 3;
-                                        //		}
-                                        //		else{
-                                        printf("check %d %d = 7 because %d %d %d\n", i , j , r_check , g_check , b_check);
-                                        if(Arround(i , j , "flag" , array) <= 3){
-                                            array[i][j] = 3;
-                                            result = 3;
-                                        }
-                                        else{
-                                            array[i][j] = 7;
-                                            result = 7;
-                                        }
-                                        //		}
-                                    }
-                                    else{
-                                        //	if(Arround(i , j , "flag" , array) <= 3){
-                                        //		array[i][j] = 3;
-                                        //	}
-                                        //	else{
-                                        array[i][j]	= 8;
-                                        result = 8;
-                                    }
-                                    }
-                                }
-                                //	break;
-                                }
-                                else{
-                                    COLORREF color_check = GetPixel(hdc, POX + j * BoxLength + k + 4 , POY + i * BoxLength + 13 ); //
-                                    int r_check = GetRValue(color_check);
-                                    int g_check = GetGValue(color_check);
-                                    int b_check = GetBValue(color_check);
+    // 指定滑鼠的位置
+    mUp.dy=pt.y;
+    mUp.dx=pt.x;
+    mUp.dwFlags=MOUSEEVENTF_LEFTUP; // 設定左按鍵向上
+    //要用的時候再設定
 
-                                    if(r_check >= 187 && g_check < 30 && b_check < 30){//test //200
-                                        //						printf("%2d %2d = F4  %d %d %d // %d %d %d \n",i,j,r,g,b,r_check , g_check , b_check);
-                                        array[i][j] = 9;
-                                        result = 9;
-                                    }
-                                    else{
-                                        //									printf("%2d %2d = 5   %d %d %d \n",i,j,r,g,b);
-                                        array[i][j] = 5;
-                                        result = 5;
-                                    }
-                                    break;
-                                }
-                            }
+    // 建構 inputMouseDown  事件
 
-                            if(r < g || b <= g){
-                                if(r < 70){
-                                    //					printf("%2d %2d = 2 || 6   %d %d %d \n",i,j,r,g,b);
-                                    if(b > 100){
-                                        array[i][j] = 6;
-                                        result = 6;
-                                    }
-                                    else{
-                                        array[i][j] = 2;
-                                        result = 2;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        else{
+    inputMouseUp_L.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
+    inputMouseUp_L.mi=mUp;// 指定 滑鼠屬性結構
 
-                            if(r < 20 && g < 20 & b > 120 && b < 145){
-                                //				printf("%2d %2d = 4   %d %d %d \n",i,j,r,g,b);
-                                array[i][j] = 4;
-                                result = 4;
-                                break;
-                            }
+    ////////////////////
 
-                            if(r < 15 && (g > 115 && g < 128) && (b > 120 && b < 135) ){
-                                //				printf("%2d %2d =  6       %d %d %d \n",i,j,r,g,b);
-                                array[i][j] = 6;
-                                result = 6;
-                                break;
-                            }
-                            if(r > 50 && r < 80 && g > 75 && g < 95 && b < 205 && b > 180 ){
-                                COLORREF color_check = GetPixel(hdc, POX + j * BoxLength + k + 8 , POY + i * BoxLength + 13 ); //
-                                int r_check = GetRValue(color_check);
-                                int g_check = GetGValue(color_check);
-                                int b_check = GetBValue(color_check);
-                                if( r_check > 160  && g_check > 170 && b_check > 195){
-                                    //					printf("%2d %2d = 1   %d %d %d \n",i,j,r,g,b);
-                                    array[i][j] = 1;
-                                    result = 1;
-                                    button[i][j] = 0;
-                                    break;
-                                }
-                                else{
-                                    //					printf("%2d %2d  if 1 %d %d %d \n",i,j,r,g,b);
-                                    //					printf("%d %d %d \n",r_check,g_check,b_check);
-                                }
-                            }
-                        }
-                    }//if 1
-                }
-                else{
-                    return result;
-                }
-            }
+    nDown.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
+    nDown.time=0;
+    nDown.dwExtraInfo=0;
 
-            return result;
+    // 指定滑鼠的位置
+    nDown.dy=pt.y;
+    nDown.dx=pt.x;
+    nDown.dwFlags=MOUSEEVENTF_RIGHTDOWN; // 設定右按鍵向下
+    //要用的時候再設定
 
+    // 建構 inputMouseDown  事件
+
+    inputMouseDown_R.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
+    inputMouseDown_R.mi=nDown;// 指定 滑鼠屬性結構
+
+    ////////////////////////////////
+
+    nUp.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
+    nUp.time=0;
+    nUp.dwExtraInfo=0;
+
+    // 指定滑鼠的位置
+    nUp.dy=pt.y;
+    nUp.dx=pt.x;
+    nUp.dwFlags=MOUSEEVENTF_RIGHTUP; // 設定右按鍵向上
+    //要用的時候再設定
+
+    // 建構 inputMouseDown  事件
+
+    inputMouseUp_R.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
+    inputMouseUp_R.mi=nUp;// 指定 滑鼠屬性結構
+
+    return ;
+}
+void Click(int x , int y  , char *mod){
+    //	if(x == 5 && y == 12){
+    //	  puts("kielkjl;kajsdf 5 12");
+    //	  Sleep(100000);
+    //	}
+    if((!strcmp(mod , "right")) || (!strcmp(mod , "both"))) button[y][x] = 1;
+
+    if((x == 100 && y == 100)||(x == -100 || y == -100)||(x == 999 && y == 999)){
+
+    }
+    else if(x > X || x < 0 || y > Y || y < 0){
+        puts("err");
+        printf("x %d y %d flags = %d\n" , x, y , flags);
+        Sleep(15000);
+    }
+
+    UINT num ;
+
+    if((x == 100 && y == 100)){
+        pt.x = 763;
+        pt.y = 467;
+        //		exit(0);
+    }
+    else if((x == -100 && y == -100)){
+        pt.x = 806;//679
+        pt.y = 447;//445
+        //		exit(0);
+    }
+    else if((x == 999 && y == 999)){
+        pt.x = 1240;
+        pt.y = 629;
+        //	exit(0);
+    }
+    else{
+        pt.x = MOX + x * BoxLength;
+        pt.y = MOY + y * BoxLength;
+    }
+
+    SetCursorPos(pt.x , pt.y);
+
+    mDown.dy=pt.y;
+    mDown.dx=pt.x;
+    mUp.dy=pt.y;
+    mUp.dx=pt.x;
+    nDown.dy=pt.y;
+    nDown.dx=pt.x;
+    nUp.dy=pt.y;
+    nUp.dx=pt.x;
+
+    INPUT event[4]={inputMouseDown_L , inputMouseUp_L ,
+        inputMouseDown_R , inputMouseUp_R};
+
+    if((!strcmp(mod , "left")) || (!strcmp(mod , "both"))){
+        //		puts("left down");
+        num=SendInput(1,&event[0],sizeof(INPUT));
+        if(num==0){
+            puts("error");
+        }
+    }
+    //	Sleep(100);
+    if((!strcmp(mod , "right")) || (!strcmp(mod , "both"))){
+        num=SendInput(1,&event[2],sizeof(INPUT));
+        // 		puts("right down");
+        if(num==0){
+            puts("error");
+        }
+    }
+    //	Sleep(100);
+    if((!strcmp(mod , "left")) || (!strcmp(mod , "both"))){
+        // 		puts("left up");
+        num=SendInput(1,&event[1],sizeof(INPUT));
+        //		printf("%d\n"  , num);
+        if(num==0){
+            puts("error");
+        }
+    }
+    //	Sleep(100);
+    if((!strcmp(mod , "right")) || (!strcmp(mod , "both"))){
+        //		puts("right up");
+        num=SendInput(1,&event[3],sizeof(INPUT));
+        if(num==0){
+            puts("error");
         }
 
+        if(!strcmp(mod , "right")){
+            flags--;
+            array[y][x] = 9;
+            printf("flag %d %d\n" , y , x);
+            //          if(y == 2 && x == 8) Sleep(50000);
 
-
-
-
-
-        int All_count(int what , int matrix[][X]){
-            int i , j , num = 0;
-            for(i = 0; i < Y ; i++)
-                for(j = 0; j < X; j++)
-                    if(what == 'd'){
-                        if(matrix[i][j] == 0)
-                            if(neighbor_num(i , j) - Arround(i , j , "space" , array) - Arround(i , j , "flag" , array) != 0)
-                                num++;
-                    }
-                    else if(matrix[i][j] == what){
-                        num++;
-                    }
-            return num;
         }
-        int Arround(int y , int x , char *mod , int matrix[][X]){
-            int destination;
-            int num = 0;
-            if(!strcmp(mod , "flag")) destination = 9;
-            else if(!strcmp(mod , "space")) destination = 0;
-            else if(!strcmp(mod , "clear")) destination = 10;
-            else{
-                puts("Arround err");
-                exit(0);
-            }
+        Sleep(90);
+    }
 
-            struct point_ * point;
+    Sleep(10);
+
+    if(add_speed){
+        if(y >= 0 && y < Y && x >= 0 && x < X){
             int which_pt = 0;
-            while(point = rtnpt( y , x , which_pt++)){
-                if(matrix[point->y][point->x] == destination){
-                    num++;
-                    //	if(!strcmp("clear" ,  mod) )printf("%d %d clear\n" , point->y , point->x);
-                }
-                free(point);
-            }
-
-            return num;
-        }
-        int check_if_win(void){
-            //	analyze_screen();
-
-            print_array("array");
-            if(flags <= 2 && flags > 0){
-                puts("sleep 2s");
-                Sleep(2000);
-            }
-            int pass = 0;
-            int i , j , k;
-            int r , g, b;
-            hdc = GetDC(wndPane);
-            wndGameLost = FindWindow(NULL , "Game Lost");
-            if(wndGameLost != NULL){
-                LOSE_NUM++;
-                puts("game over");
-                //		Sleep(10000);
-                //        exit(0);
-                Sleep(3000);
-                exit(0);
-                Click(-100 , -100 , "left");
-                Sleep(1500);
-                return -1;
-            }
-
-            wndGameLost = FindWindow(NULL , "Game Won");
-            if(wndGameLost != NULL){
-                puts("game won");
-                WIN_NUM++;
-                //		Sleep(10000);
-                //		exit(0);
-                Sleep(3000);
-                Click(100 , 100 , "left");
-                Sleep(1500);
-                return 1;
-            }
-            return 0;
-            /*
-               for(i = 16 ; i < 18 ; i++){//-4
-               for(j = 24 ; j < 27 ; j++){
-               for(k = -30 ; k < -5 ; k++){// 10 27
-               if(array[i][j] == 0){
-               COLORREF color = GetPixel(hdc, POX + j * BoxLength + k , POY + i * BoxLength );//  -3     +3   origin i+6
-               r = GetRValue(color);
-               g = GetGValue(color);
-               b = GetBValue(color);
-               if(((i == 17)&& (j == 25))){
-               if(k == -22 || k == -21 || k ==-14 || k == -13 || k == -12)
-               if(r > 100 && g > 100 && b > 100)
-               pass++;
-            //								else
-            //									printf("%2d %2d   %d %d %d \n",i,j,r,g,b);
-            //									if(r > 100) printf("%d k\n" ,k );
-            }
-            }
-            }
-            }
-            }
-            if(pass == 5 && flags < 3){
-            puts("win ^^");
-            exit(0);
-            }
-            //	else
-            //		printf("%d pass\n" , pass);
-            //	Sleep(100000);
-            return ;
-            */
-        }
-
-        void print_array(char matrix_name[]){
-            int i , j;
-            //	void *matrix_one_D; //array[Y][X]
-            //	int *matrix_two_D;
-            int tem_array[Y][X];
-            if(!strcmp(matrix_name,"dfs_count")){
-                for(i = 0;i<Y ; i++){
-                    for(j = 0 ; j < X ; j++){
-                        if(dfs_count[i][j].num == -1)
-                            printf("      ");
-                        else if(neighbor_num(i , j) - Arround(i , j , "space" , array) - Arround(i , j , "flag" , array) == 0)//matrix[i][j] == -2)
-                            printf("%1.0f?%2d " , dfs_count[i][j].num , dfs_count[i][j].exp);
-                        else
-                            printf("%1.0fe%2d " , dfs_count[i][j].num , dfs_count[i][j].exp);
+            struct point_ * point;
+            int detect[Y][X];
+            memset(detect , 0 , sizeof(detect));
+            if(!strcmp(mod , "both")){
+                while(point = rtnpt( y , x , which_pt++)){
+                    detect[point->y][point->x] = 1;
+                    int result = analyze_single(point->y , point->x);
+                    if(result >= 1 && result < 7)
+                        direct_single(point->y , point->x);
+                    else if(result == 10){
+                        dp(point->y , point->x , detect);
                     }
-                    puts("");
+                    free(point);
                 }
             }
-            else{
-                if(!strcmp(matrix_name , "array")){
-                    // matrix_one_D = array;
-                    for(i = 0 ; i != Y ; i ++)
-                        for(j = 0 ;  j != X ; j ++)
-                            tem_array[i][j] = array[i][j];
-                }
-                else if(!strcmp(matrix_name , "reason_array")){// matrix_one_D = reason_array;
-                    for(i = 0 ; i != Y ; i ++)
-                        for(j = 0 ;  j != X ; j ++)
-                            tem_array[i][j] = reason_array[i][j];
-                }
-                else if(!strcmp(matrix_name , "border")){// matrix_one_D = reason_array;
-                    for(i = 0 ; i != Y ; i ++)
-                        for(j = 0 ;  j != X ; j ++)
-                            tem_array[i][j] = border[i][j];
-                }
-                else printf("no such array named %s\n" , matrix_name) , exit(0);
-
-                for(i = 0;i<Y ; i++){
-                    for(j = 0 ; j < X ; j++){
-                        //				matrix_two_D = (matrix_one_D[i]);
-                        if(tem_array[i][j] == 9)
-                            printf("F ");
-                        else if(tem_array[i][j] == 10 || tem_array[i][j] == -1)
-                            printf("  ");
-                        else
-                            printf("%d " , tem_array[i][j]);
-                    }
-                    puts("");
-                }
-            }
-
-            puts("\n");
-            return ;
-        }
-        //int mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
-        //const int MOUSEEVENTF_MOVE = 0x0001;        //移?鼠?
-        //public const int MOUSEEVENTF_LEFTDOWN = 0x0002;    //模擬鼠標左鍵按下
-        //public const int MOUSEEVENTF_LEFTUP = 0x0004;      //模擬鼠標左鍵抬起
-        //const int MOUSEEVENTF_RIGHTDOWN = 0x0008;  0 //模擬鼠標右鍵按下
-        //const int MOUSEEVENTF_RIGHTUP = 0x0010;     //模擬鼠標右鍵抬起
-        //const int MOUSEEVENTF_MIDDLEDOWN = 0x0020;  //模擬鼠標中鍵按下
-        //const int MOUSEEVENTF_MIDDLEUP = 0x0040;    //模擬鼠標中鍵抬起
-        //const int MOUSEEVENTF_ABSOLUTE = 0x8000;    //標示是否采用絕對坐標
-        void MouseSetting(void){
-
-            pt.x = MOX;
-            pt.y = MOY;
-
-            mDown.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
-            mDown.time=0;
-            mDown.dwExtraInfo=0;
-
-            // 指定滑鼠的位置
-            mDown.dy=pt.y;
-            mDown.dx=pt.x;
-            mDown.dwFlags=MOUSEEVENTF_LEFTDOWN; // 設定左按鍵向下
-            //要用的時候再設定
-
-            // 建構 inputMouseDown  事件
-
-            inputMouseDown_L.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
-            inputMouseDown_L.mi=mDown;// 指定 滑鼠屬性結構
-
-            ////////////////////////
-
-            mUp.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
-            mUp.time=0;
-            mUp.dwExtraInfo=0;
-
-            // 指定滑鼠的位置
-            mUp.dy=pt.y;
-            mUp.dx=pt.x;
-            mUp.dwFlags=MOUSEEVENTF_LEFTUP; // 設定左按鍵向上
-            //要用的時候再設定
-
-            // 建構 inputMouseDown  事件
-
-            inputMouseUp_L.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
-            inputMouseUp_L.mi=mUp;// 指定 滑鼠屬性結構
-
-            ////////////////////
-
-            nDown.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
-            nDown.time=0;
-            nDown.dwExtraInfo=0;
-
-            // 指定滑鼠的位置
-            nDown.dy=pt.y;
-            nDown.dx=pt.x;
-            nDown.dwFlags=MOUSEEVENTF_RIGHTDOWN; // 設定右按鍵向下
-            //要用的時候再設定
-
-            // 建構 inputMouseDown  事件
-
-            inputMouseDown_R.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
-            inputMouseDown_R.mi=nDown;// 指定 滑鼠屬性結構
-
-            ////////////////////////////////
-
-            nUp.mouseData=0;// 不處理 mouse wheel event, 所以這項沒用
-            nUp.time=0;
-            nUp.dwExtraInfo=0;
-
-            // 指定滑鼠的位置
-            nUp.dy=pt.y;
-            nUp.dx=pt.x;
-            nUp.dwFlags=MOUSEEVENTF_RIGHTUP; // 設定右按鍵向上
-            //要用的時候再設定
-
-            // 建構 inputMouseDown  事件
-
-            inputMouseUp_R.type=INPUT_MOUSE; // 指定 input 為 mouse (input 可以是 keyboard)
-            inputMouseUp_R.mi=nUp;// 指定 滑鼠屬性結構
-
-            return ;
-        }
-        void Click(int x , int y  , char *mod){
-            //	if(x == 5 && y == 12){
-            //	  puts("kielkjl;kajsdf 5 12");
-            //	  Sleep(100000);
-            //	}
-            if((!strcmp(mod , "right")) || (!strcmp(mod , "both"))) button[y][x] = 1;
-
-            if((x == 100 && y == 100)||(x == -100 || y == -100)||(x == 999 && y == 999)){
-
-            }
-            else if(x > X || x < 0 || y > Y || y < 0){
-                puts("err");
-                printf("x %d y %d flags = %d\n" , x, y , flags);
-                Sleep(15000);
-            }
-
-            UINT num ;
-
-            if((x == 100 && y == 100)){
-                pt.x = 763;
-                pt.y = 467;
-                //		exit(0);
-            }
-            else if((x == -100 && y == -100)){
-                pt.x = 806;//679
-                pt.y = 447;//445
-                //		exit(0);
-            }
-            else if((x == 999 && y == 999)){
-                pt.x = 1240;
-                pt.y = 629;
-                //	exit(0);
-            }
-            else{
-                pt.x = MOX + x * BoxLength;
-                pt.y = MOY + y * BoxLength;
-            }
-
-            SetCursorPos(pt.x , pt.y);
-
-            mDown.dy=pt.y;
-            mDown.dx=pt.x;
-            mUp.dy=pt.y;
-            mUp.dx=pt.x;
-            nDown.dy=pt.y;
-            nDown.dx=pt.x;
-            nUp.dy=pt.y;
-            nUp.dx=pt.x;
-
-            INPUT event[4]={inputMouseDown_L , inputMouseUp_L ,
-                inputMouseDown_R , inputMouseUp_R};
-
-            if((!strcmp(mod , "left")) || (!strcmp(mod , "both"))){
-                //		puts("left down");
-                num=SendInput(1,&event[0],sizeof(INPUT));
-                if(num==0){
-                    puts("error");
-                }
-            }
-            //	Sleep(100);
-            if((!strcmp(mod , "right")) || (!strcmp(mod , "both"))){
-                num=SendInput(1,&event[2],sizeof(INPUT));
-                // 		puts("right down");
-                if(num==0){
-                    puts("error");
-                }
-            }
-            //	Sleep(100);
-            if((!strcmp(mod , "left")) || (!strcmp(mod , "both"))){
-                // 		puts("left up");
-                num=SendInput(1,&event[1],sizeof(INPUT));
-                //		printf("%d\n"  , num);
-                if(num==0){
-                    puts("error");
-                }
-            }
-            //	Sleep(100);
-            if((!strcmp(mod , "right")) || (!strcmp(mod , "both"))){
-                //		puts("right up");
-                num=SendInput(1,&event[3],sizeof(INPUT));
-                if(num==0){
-                    puts("error");
-                }
-
-                if(!strcmp(mod , "right")){
-                    flags--;
-                    array[y][x] = 9;
-                    printf("flag %d %d\n" , y , x);
-                    //          if(y == 2 && x == 8) Sleep(50000);
-
-                }
-                Sleep(90);
-            }
-
-            Sleep(10);
-
-            if(add_speed){
-                if(y >= 0 && y < Y && x >= 0 && x < X){
-                    int which_pt = 0;
-                    struct point_ * point;
-                    int detect[Y][X];
-                    memset(detect , 0 , sizeof(detect));
-                    if(!strcmp(mod , "both")){
+            else if(!strcmp(mod , "left")){
+                int result = analyze_single(y , x);
+                if(result >= 1 && result < 7){
+                    detect[y][x] = 1;
+                    if(!direct_single(y , x)){
                         while(point = rtnpt( y , x , which_pt++)){
                             detect[point->y][point->x] = 1;
-                            int result = analyze_single(point->y , point->x);
+                            result = analyze_single(point->y , point->x);
                             if(result >= 1 && result < 7)
                                 direct_single(point->y , point->x);
                             else if(result == 10){
@@ -1865,55 +1542,39 @@ int analyze_single(int i , int j){
                             free(point);
                         }
                     }
-                    else if(!strcmp(mod , "left")){
-                        int result = analyze_single(y , x);
-                        if(result >= 1 && result < 7){
-                            detect[y][x] = 1;
-                            if(!direct_single(y , x)){
-                                while(point = rtnpt( y , x , which_pt++)){
-                                    detect[point->y][point->x] = 1;
-                                    result = analyze_single(point->y , point->x);
-                                    if(result >= 1 && result < 7)
-                                        direct_single(point->y , point->x);
-                                    else if(result == 10){
-                                        dp(point->y , point->x , detect);
-                                    }
-                                    free(point);
-                                }
-                            }
-                        }
-                        else if(result == 10){
-                            dp(y , x , detect);
-                        }
-                    }
-                    else if(!strcmp(mod , "right")){
-
-                        while(point = rtnpt( y , x , which_pt++)){
-                            direct_single(point->y , point->x);
-                            free(point);
-                        }
-
-                    }
+                }
+                else if(result == 10){
+                    dp(y , x , detect);
                 }
             }
-            return ;
-        }
-        void dp(int y , int x , int detect[][X]){
+            else if(!strcmp(mod , "right")){
 
-            int which_pt = 0;
-            struct point_ * point;
-            while(point = rtnpt( y , x , which_pt++)){
-                if(detect[point->y][point->x])
-                    continue;
-                detect[point->y][point->x] = 1;
-                if(array[point->y][point->x] == 0 || array[point->y][point->x] == 7 || array[point->y][point->x] == 8) analyze_single(point->y , point->x);
-
-                if(array[point->y][point->x] >= 1 && array[point->y][point->x] < 7)
+                while(point = rtnpt( y , x , which_pt++)){
                     direct_single(point->y , point->x);
-                else if(array[point->y][point->x] == 10){
-                    dp(point->y , point->x , detect);
+                    free(point);
                 }
-                free(point);
+
             }
-            return;
         }
+    }
+    return ;
+}
+void dp(int y , int x , int detect[][X]){
+
+    int which_pt = 0;
+    struct point_ * point;
+    while(point = rtnpt( y , x , which_pt++)){
+        if(detect[point->y][point->x])
+            continue;
+        detect[point->y][point->x] = 1;
+        if(array[point->y][point->x] == 0 || array[point->y][point->x] == 7 || array[point->y][point->x] == 8) analyze_single(point->y , point->x);
+
+        if(array[point->y][point->x] >= 1 && array[point->y][point->x] < 7)
+            direct_single(point->y , point->x);
+        else if(array[point->y][point->x] == 10){
+            dp(point->y , point->x , detect);
+        }
+        free(point);
+    }
+    return;
+}

@@ -55,7 +55,7 @@ void recvPlayer(void *clt_idx){
             else if(!strcmp("open" , arg[0]) && i == 3) run('s' , atoi(arg[1]) , atoi(arg[2]));
             else if(!strcmp("flag" , arg[0]) && i == 3) run('f' , atoi(arg[1]) , atoi(arg[2]));
             else if(!strcmp("ques" , arg[0]) && i == 3) run('?' , atoi(arg[1]) , atoi(arg[2]));
-            else if(!strcmp("look" , arg[0])) peek(G_CLIENT[idx].fd);
+            else if(!strcmp("peek" , arg[0])) peek(G_CLIENT[idx].fd);
             else printf("unknown command %s\n" , buffer);
             printMap(1);
             if(CheckIfWin()){

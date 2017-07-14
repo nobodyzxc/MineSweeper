@@ -64,12 +64,19 @@ void recvSvr(void *svr_fd){
             char str[10];
 		    for(i = 0 ; i < G_MAPLN ; i++){
                 for(j = 0 ; j < G_MAPWD ; j++){
-                    sscanf(buffer + ptr , "%s%n" , str , &n);
-                    ptr += n;
-                    if(str[0] == 'F') G_MAP[i][j] = 9;
-                    else if(str[0] == '?') G_MAP[i][j] = 10;
-                    else G_MAP[i][j] = str[0] - '0';
+//                    sscanf(buffer + ptr , "%s%n" , str , &n);
+//                    ptr += n;
+                    int pos = i * G_MAPWD + j;
+                    if(buffer[pos] == 'F') G_MAP[i][j] = 9;
+                    else if(buffer[pos] == '?') G_MAP[i][j] = 10;
+                    else if(buffer[pos] >= '0' && 
+                            buffer[pos] <= '9')
+                        G_MAP[i][j] = buffer[pos] - '0';
+                    else if(buffer[pos] == 0) break;
+                    else
+                        printf("%c" , buffer[pos]);
                 }
+                if(buffer[pos] == 0) break;
             }
 		}
 		else{
