@@ -17,9 +17,13 @@ void initApi(){
 
 extern POINT ZERO;
 void showGamePane(){
-    if(WindowFromPoint(ZERO) ==
-            GetWindow(GameHwnd , 5))
-        return;
+
+    HWND top = WindowFromPoint(ZERO);
+    HWND lst = GetWindow(GameHwnd , 5);
+    while(lst){
+        if(top == lst) return;
+        lst = GetWindow(lst , 5);
+    }
 
     ShowWindow(GameHwnd , 2);
     ShowWindow(GameHwnd , SW_SHOWNORMAL);
