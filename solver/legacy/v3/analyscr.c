@@ -58,7 +58,7 @@ void setFormLoc(){
     RECT Msrc = { 0 };
     HWND MSpane = GetWindow(GameHwnd , 5);
 
-    if(!MSpane) puts("no such win") , exit(0);
+    if(!MSpane) puts("please start you game.") , exit(0);
     if(!GetWindowRect(MSpane , &Msrc)){
         //ErrorExit(NULL);
         puts("rect ERR");
@@ -209,7 +209,7 @@ void analyMap(bool update){
 }
 
 int gameState(void){
-/* GetBMptr(true); */
+    /* GetBMptr(true); */
     int rtn = RUN;
     if(GetPx(WINLOCX , WINLOCY , false)
             == SUNGLAS)
@@ -218,4 +218,59 @@ int gameState(void){
             == DEDFACE)
         rtn = LOS , puts("lose");
     return rtn;
+}
+
+void checkResolution(void){
+
+    HDC hdcScreen = GetDC(HWND_DESKTOP);
+
+    int sup[12][2] =
+    {
+        {1600 , 900} ,
+        {1440 , 900} ,
+        {1366 , 768} ,
+        {1360 , 768} ,
+        {1280 , 960} ,
+        {1280 , 800} ,
+        {1280 , 768} ,
+        {1280 , 720} ,
+        {1280 , 600} ,
+        {1152 , 864} ,
+        {1024 , 768} ,
+        { 800 , 600}
+    } ,
+        unsup[4][2] =
+        {
+            {1920 , 1080} ,
+            {1680 , 1050} ,
+            {1400 , 1050} ,
+            {1280 , 1024} ,
+        };
+
+    int w = GetDeviceCaps(hdcScreen, HORZRES) , knw = 0;
+    int h = GetDeviceCaps(hdcScreen, VERTRES) , i;
+
+    for(i = 0 ; i < 12 ; i++)
+        if(sup[i][0] == w && sup[i][1] == h)
+            return;
+
+    for(i = 0 ; i < 4 ; i++)
+        if(unsup[i][0] == w && unsup[i][1] == h)
+            printf("unsupported resolution : %d x %d \n" , w , h) , knw = 1;
+
+    puts("supported resolution:");
+    for(i = 0 ; i < 12 ; i++)
+        printf("\t%d x %d\n" , sup[i][0] , sup[i][1]);
+
+    puts("unsupported resolution:");
+    for(i = 0 ; i < 4 ; i++)
+        printf("\t%d x %d\n" , unsup[i][0] , unsup[i][1]);
+
+    if(!knw){
+        puts("I am not sure your resolution will run normally.");
+        printf("Do you want to continue?(y/n) ");
+        char res[100]; scanf("%s" , res);
+        if(res[0] == 'y' || 'Y') return;
+    }
+    exit(0);
 }

@@ -88,4 +88,6 @@ void analyMap(bool update);
 LPDWORD GetBMptr(bool update);
 
 int gameState(void);
+
+void checkResolution(void);
 #endif
