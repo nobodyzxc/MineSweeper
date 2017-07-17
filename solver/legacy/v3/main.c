@@ -46,7 +46,6 @@ int main(void){
     analyAftClk(pt , LEFT);
     printTab(map);
     flags = (float)(FLAGNUM - cntMap(FLG , map));
-
     return EXPECT(Gaming() , LOS);
 }
 
@@ -360,6 +359,7 @@ void printWithExh(int tab[][MAPWD]){
         }
         puts("");
     }
+    fflush(stdout);
 }
 
 void analyAftClk(POINT pt , int type){

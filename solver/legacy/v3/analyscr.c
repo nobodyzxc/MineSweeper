@@ -49,6 +49,7 @@ int FORMLOCY(){
 
 void getGameWin(){
     GameHwnd = FindWindow(NULL , "Minesweeper");
+    if(!GameHwnd) puts("Please start your game.") , exit(0);
 }
 
 void setFormLoc(){
@@ -58,7 +59,7 @@ void setFormLoc(){
     RECT Msrc = { 0 };
     HWND MSpane = GetWindow(GameHwnd , 5);
 
-    if(!MSpane) puts("please start you game.") , exit(0);
+    if(!MSpane) puts("Cannot Get Child Window") , exit(0);
     if(!GetWindowRect(MSpane , &Msrc)){
         //ErrorExit(NULL);
         puts("rect ERR");
@@ -256,21 +257,21 @@ void checkResolution(void){
 
     for(i = 0 ; i < 4 ; i++)
         if(unsup[i][0] == w && unsup[i][1] == h)
-            printf("unsupported resolution : %d x %d \n" , w , h) , knw = 1;
+            printf("unsupported resolution : %d x %d \n" , w , h);// , knw = 1;
 
-    puts("supported resolution:");
+    puts("resolution may support:");
     for(i = 0 ; i < 12 ; i++)
         printf("\t%d x %d\n" , sup[i][0] , sup[i][1]);
 
-    puts("unsupported resolution:");
+    puts("resolution may not support:");
     for(i = 0 ; i < 4 ; i++)
         printf("\t%d x %d\n" , unsup[i][0] , unsup[i][1]);
 
     if(!knw){
-        puts("I am not sure your resolution will run normally.");
-        printf("Do you want to continue?(y/n) ");
+        puts("I am not sure it will run normally in your resolution.");
+        printf("Do you want to continue?(y/n) "); fflush(stdout);
         char res[100]; scanf("%s" , res);
-        if(res[0] == 'y' || 'Y') return;
+        if(res[0] == 'y' || res[0] == 'Y') return;
     }
     exit(0);
 }
