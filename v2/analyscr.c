@@ -6,8 +6,6 @@
 #include"msapi.h"
 #include"analyscr.h"
 
-//#include "winerr.c"
-
 extern int map[MAPHI][MAPWD] , exh[MAPHI][MAPWD];
 
 static LONG lWidth , lHeight;
@@ -61,14 +59,12 @@ void setFormLoc(){
 
     if(!MSpane) puts("Cannot Get Child Window") , exit(0);
     if(!GetWindowRect(MSpane , &Msrc)){
-        //ErrorExit(NULL);
         puts("rect ERR");
         printf("%d\n" , Msrc);
         exit(0);
     }
     ZERO.x = Msrc.left + MAP_O_FIX_X;
     ZERO.y = Msrc.top + MAP_O_FIX_Y;
-    //printf("ZERO(x,y)@(%d,%d)\n" , ZERO.x , ZERO.y);
 }
 
 COLORREF GetPx(int x , int y , bool update){
@@ -158,20 +154,13 @@ LPDWORD GetBMptr(bool update){
         SelectObject(hdcMem, hbmOld);
         DeleteObject(hbmMem);
         DeleteDC(hdcMem);
-        //free hdcMem
+        //free hdcMem , hbmMem
     }
-    //free hbmMem
-    //    if(lpBits){
-    //        printf("free %p\n" , lpBits);
-    //        exit(0);
-    //        free(lpBits);
-    //    }
     //needn't to free lpBits , system auto
     hbmMem = CreateDIBSection(hdcScreen,
             &bi, DIB_RGB_COLORS, (LPVOID*)&lpBits, NULL, 0);
 
-
-    if(!lpBits) puts("FUCK!MALLOC FAILD!");
+    if(!lpBits) puts("MALLOC FAILD!");
     if(!hbmMem) puts("YES , IT SURELY DIE");
     if(!hbmMem && !lpBits) exit(0);
 

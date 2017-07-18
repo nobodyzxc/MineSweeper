@@ -6,7 +6,7 @@ enum {
 };
 
 const char MSSYM[] = {
-    [UNK] = '.' ,//UNK + '0',
+    [UNK] = '.' ,
     [ONE] = ONE + '0',
     [TWO] = TWO + '0',
     [THR] = THR + '0',

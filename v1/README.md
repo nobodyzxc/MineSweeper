@@ -12,3 +12,5 @@ Demo:
 MineSweeper Version: windows 7 version for windows 8
 
 resolution : 1366 x 768
+
+The Solver is writen by using windows api and the game is on windows , so it can only run on windows.
