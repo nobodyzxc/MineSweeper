@@ -1,4 +1,11 @@
+GXXVER   := $(shell command -v mingw32-g++ 2> /dev/null)
+
+ifdef GXXVER
 CXX      = mingw32-g++.exe
+else
+CXX      = x86_64-w64-mingw32-g++.exe
+endif
+
 CXXFLAGS = -g -static -mwindows
 SRCS     = msapi analyscr ctrlmus
 _SRCS    = ${SRCS:%=%.c}
