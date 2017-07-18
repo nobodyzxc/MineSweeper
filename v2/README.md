@@ -1,6 +1,6 @@
 # Solver
 
-A rebuild version from v1.
+A rebuild version from v1 after one year.
 
 I found the windows 7/8 minesweeper no longer runs on my machine because of windows update.
 
