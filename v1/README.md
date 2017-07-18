@@ -8,7 +8,7 @@ Wait to rebuid it.
 
 WinSolver:
 
-    winSolver is a solver for microsoft minesweeper (windows 8 version)
+    winSolver is a solver for microsoft minesweeper (windows 7/8 version)
 
     Demo:
 
