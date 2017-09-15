@@ -21,6 +21,19 @@
 
 #define OPENED(mp , p) (!UNOPEN(mp , p))
 
+#define RPTP(point , p_var , pidx_var , stat) \
+    do{ \
+        int pidx_var; \
+        POINT **p_var = adjPts(point); \
+        for(pidx_var = 0 ; pidx_var < 8 && \
+                p[pidx_var] ; pidx_var++){ \
+            stat; \
+        } \
+        for(pidx_var = 0 ; pidx_var < 8 ; pidx_var++) \
+            free(p[pidx_var]); \
+        free(p); \
+    }while(0);
+
 void initApi();
 
 void showGamePane();

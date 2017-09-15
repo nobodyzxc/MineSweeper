@@ -41,6 +41,7 @@ int getColor(COLORREF _color){
 }
 
 void printTab(int tab[][MAPWD]){
+    return;
     int i , j;
     for(i = 0 ; i < MAPHI ; i++){
         for(j = 0 ; j < MAPWD ; j++){

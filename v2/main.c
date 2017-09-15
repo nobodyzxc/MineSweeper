@@ -1,3 +1,5 @@
+//#define printTab printWithExh
+
 #include<stdio.h>
 #include<windows.h>
 #include<Winuser.h>
@@ -30,7 +32,36 @@ struct notation dfs_count[MAPHI][MAPWD];
 float flags = FLAGNUM;
 float dfs_flags = FLAGNUM;
 
-#include "main.h"
+//#include "main.h"
+void initMap();
+int Gaming(void);
+int direct();
+int dirSng(POINT);
+void addFlgArd(POINT);
+void cpMaptoRsnMap();
+int suppose(int);
+int rsning(POINT);
+int rsnExpn(POINT , int);
+int cntMap(int , int matrix[][MAPWD]);
+int adjCnt(POINT , int , int mata[][MAPWD]);
+int adjCntMrk(POINT pt , int mat[][MAPWD]);
+void printWithExh(int tab[][MAPWD]);
+void analyAftClk(POINT pt , int);
+
+int need_flag(void);
+bool legalRsn(POINT argpt);
+void print_map(const char *matrix_name);
+int resuppose(void);
+
+int dfs_rsning(void);
+void dfs(POINT);
+void gessClk(void);
+void initMouse(void);
+struct notation C(int P , int C);
+void addC(struct notation *beadd , struct notation add);
+void dfs(POINT);
+void gessClk(void);
+
 
 int main(void){
 
@@ -46,7 +77,14 @@ int main(void){
     analyAftClk(pt , LEFT);
     printTab(map);
     flags = (float)(FLAGNUM - cntMap(FLG , map));
+#ifdef DEBUG
     return EXPECT(Gaming() , LOS);
+#else
+    Gaming();
+    printf("flags left:%d , block left:%d\n"
+            , int(flags) , cntMap(UNK , map));
+    return 0;
+#endif
 }
 
 
@@ -206,7 +244,6 @@ int suppose(int what){
                         flags--;
                         dirSng(pt);
                     }
-
                     //while(direct());
                 }
             }
@@ -321,12 +358,9 @@ int cntMap(int what, int mat[][MAPWD]) {
 int adjCnt(POINT pt , int type , int mat[][MAPWD]) {
     int rtn = 0 , idx = 0;
     POINT **adjptr = adjPts(pt);
-    //printf("(%d,%d)->type %d\n" , pt.y , pt.x , type);
     for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
         if(PTON(*adjptr[idx] , mat) == type)
             rtn++;
-        //printf("c(%d,%d) = %d , acc %d\n" , adjptr[idx]->y ,
-        //        adjptr[idx]->x , PTON(*adjptr[idx] , mat) , rtn);
     }
     for(idx = 0 ; idx < 8 ; idx++)
         free(adjptr[idx]);
@@ -359,7 +393,8 @@ void printWithExh(int tab[][MAPWD]){
         }
         puts("");
     }
-    fflush(stdout);
+    //fflush(stdout);
+    return;
 }
 
 void analyAftClk(POINT pt , int type){

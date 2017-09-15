@@ -1,107 +1,54 @@
 int need_flag(void){
-    int i , j , tem , pem;
+    int i , j;
     for(i = 0 ; i < MAPHI ; i++)
         for(j = 0 ; j < MAPWD ; j++){
             POINT pt = {j , i};
-            if(rsnMap[i][j] > 0 && rsnMap[i][j] < 7){// 7 8 ignore !!
-                tem = adjCnt(pt , FLG , rsnMap);
-                pem = adjCnt(pt , UNK , rsnMap);
-                if(rsnMap[i][j] > tem && pem > 0){
-                    //				printf("%d %d need flags %d - %d\n" , i , j,rsnMap[i][j] , adjCnt(i , j , "flag" , rsnMap) );
+            if(HASBOMB(rsnMap , pt)){
+                if(PTON(pt , rsnMap) > adjCnt(pt , FLG , rsnMap)
+                        && adjCnt(pt , UNK , rsnMap) > 0)
                     return 1;
-                }
             }
         }
     return 0;
 }
 
-int check_if_right(POINT argpt){
+bool legalRsn(POINT argpt){
 
-    int value = 1;
-    int tem;
-    int pem;
-    int idx = 0;
-    POINT * adjptr;
-
-    if(argpt.y != -1){
-        POINT **adjptr = adjPts(argpt);
-        for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
-            if(PTON(*adjptr[idx] , rsnMap) > 0 && PTON(*adjptr[idx] , rsnMap) < 9){
-                tem = adjCnt(*adjptr[idx] , FLG , rsnMap);
-                pem = adjCnt(*adjptr[idx] , UNK , rsnMap);
-                if(PTON(*adjptr[idx] , rsnMap) < tem){
-                    printf("%d %d is %d while F is %d\n" ,
-                            adjptr[idx]->y , adjptr[idx]->x ,
-                            PTON(*adjptr[idx] , rsnMap) , tem);
-                    //print_map("rsnMap");
-
-                    return -1;
-                }
-                else if(PTON(*adjptr[idx] , rsnMap) > tem && pem == 0){
-                    printf("%d %d is %d while adjCntF is %d space is %d\n" ,
-                            adjptr[idx]->y , adjptr[idx]->x ,
-                            PTON(*adjptr[idx] , rsnMap) ,  tem , pem);
-                    //print_map("rsnMap");
-                    return -1;
-                }
-            }
+    int rtn = true , idx = 0;
+    POINT **adjptr = adjPts(argpt);
+    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
+        if(PTON(*adjptr[idx] , rsnMap) > 0
+                && PTON(*adjptr[idx] , rsnMap) < 9){
+            int flgs = adjCnt(*adjptr[idx] , FLG , rsnMap);
+            int unks = adjCnt(*adjptr[idx] , UNK , rsnMap);
+            if(PTON(*adjptr[idx] , rsnMap) < flgs)
+                rtn = false; /* too many flags */
+            else if(PTON(*adjptr[idx] , rsnMap) > flgs
+                    && unks == 0)
+                rtn = false; /* no space left to add flags */
         }
-        for(idx = 0 ; idx < 8 ; idx++)
-           free(adjptr[idx]);
-        free(adjptr);
-        //rsnMap[adjptr->y][adjptr->x] > tem && pem > 0
-        if(need_flag()){
-            if(dfs_flags  >= 1){
-                value = 0;
-            }
-            else{
-                puts("need flags while no space left");
-                //print_map("rsnMap");
-                return -1;
-            }
+    }
+
+    for(idx = 0 ; idx < 8 ; idx++)
+        free(adjptr[idx]);
+    free(adjptr);
+
+    if(need_flag()){ /* if whole map still needs flag */
+        if(dfs_flags <= 0){
+            puts("need flags while no space left");
+            rtn = false;
         }
     }
     else{
-
-        int i , j ;
-        for(i = 0 ; i < MAPHI; i++){
-            for(j = 0 ; j < MAPWD ; j++){
-                POINT pt = {j , i};
-                if(rsnMap[i][j] > 0 && rsnMap[i][j]< 9){
-                    tem = adjCnt(pt , FLG , rsnMap);
-                    pem = adjCnt(pt , UNK , rsnMap);
-                    if(rsnMap[i][j] < tem){
-                        printf("%d %d is %d while F is %d\n" , i , j , rsnMap[i][j] , tem);
-                        //   if(rsnMap[0][9] == 9)
-                        //	print_map("rsnMap");
-                        return -1;
-                    }
-                    else if(rsnMap[i][j] > tem && pem == 0){
-                        printf("%d %d is %d while adjCntF is %d space is %d\n" , i , j , rsnMap[i][j] ,  tem , pem);
-                        //	if(rsnMap[0][9] == 9)
-                        //  print_map("rsnMap");
-                        //						Sleep(1000);
-                        return -1;
-                    }
-                    else if(rsnMap[i][j] > tem && pem > 0){
-                        if(dfs_flags  >= 1){
-                            value = 0;
-                        }
-                        else{
-                            return -1;
-                        }
-                    }
-                }
-            }
-        }
+        puts("no need flags , maybe have result");
+        getchar();
+        printTab(rsnMap);
     }
-    return value;
+    return rtn;
 }
 
 void print_map(const char *matrix_name) {
     int i, j;
-    //	void *matrix_one_D; //map[MAPHI][MAPWD]
-    //	int *matrix_two_D;
     int tem_map[MAPHI][MAPWD];
     if (!strcmp(matrix_name, "dfs_count")) {
         for (i = 0; i < MAPHI; i++) {
@@ -157,14 +104,14 @@ int resuppose(void){
     int result = 0;
 
     analyMap(true);
-    sleep(1);
 
     game_plat_possible = 0;
     left_mine_unknown = 0;
 
     print_map("map");
     flags = (float)(FLAGNUM - cntMap(FLG , map));
-    printf("flags == %f ,FLAGNUM is %d ,  cntMap 9 is %d \n" , flags , FLAGNUM , cntMap(9 , map));
+    printf("flags == %f ,FLAGNUM is %d ,  cntMap 9 is %d \n" ,
+            flags , FLAGNUM , cntMap(9 , map));
     dfs_flags = flags;
     printf("dfs_flags = %f\n" , dfs_flags);
 
@@ -197,15 +144,6 @@ int resuppose(void){
         }
     }
 
-    puts("\n\n              resuppose   start         !!!!!             !!!!!     ");
-    print_map("rsnMap");
-    puts("              resuppose            !!!!!             !!!!!     \n");
-    print_map("dfs_count");
-    puts("");
-    print_map("border");
-    printf("dfs_flags == %f\n" , dfs_flags);
-    //getchar();
-
     out_to_rand = 0;
     //something strange, so i make border again
 
@@ -218,6 +156,7 @@ int resuppose(void){
     POINT zero = {0 , 0};
     dfs(zero);
     puts("out dfs");
+
     if(out_to_rand == 10000){
         gessClk();
         return result;//question?
@@ -477,10 +416,6 @@ void addC(struct notation *beadd , struct notation add){
 
 void dfs(POINT argpt){
 
-    if(rsnMap[15][26] == 10){
-        print_map("rsnMap");
-        printf(" 1 y %d  x %d\n" , argpt.y , argpt.x);
-    }
     out_to_rand++;
 
     if(out_to_rand % 10000 == 0){
@@ -498,33 +433,21 @@ void dfs(POINT argpt){
 
             printf("suppose into %d %d\n" , i , j);
 
-            if(rsnMap[i][j] == 0 ){
+            if(PTON(pt , rsnMap) == UNK){
 
                 if(border[i][j]){
-                    // if there is any number arround i j , "and there is any space arround i j"??
-                    print_map("rsnMap");
-                    printf("%d %d\n" , i , j );
 
                     if(cntMap(UNK , rsnMap) - 1 >= dfs_flags){
-                        rsnMap[i][j] = 10; // suppose !!!
+                        rsnMap[i][j] = SAF;
 
-                        int result = check_if_right(pt);
-                        if(result == 0){
-                            dfs(pt);
-                        }
-                        else if(result == 1){
+                        if(legalRsn(pt)) dfs(pt);
+                        /* else if(result == 1)
                             puts("AAAAA???");
                             out_to_rand = 10000;
                             return;
-                        }
-                        else{
-
-                        }
-                    }
-                    else{// fault
+                        } */
 
                     }
-
 
                     puts("into flags");
 
@@ -534,28 +457,12 @@ void dfs(POINT argpt){
                         rsnMap[i][j] = 9;
                         dfs_flags--;
 
-
-                        //						print_map(rsnMap);
-
-                        int result;
-                        result = check_if_right(pt);
-
-
-                        if(result == 0){
-                            //							printf("\n%d %d  -- = falgs = %f \n" , i , j , dfs_flags);
-                            //							puts("^^^^ Success");
-
-
+                        if(legalRsn(pt)){
                             dfs(pt);
-
-                            //    if(out_to_rand >= 10000){
-                            //      return;
-                            //  }
-
                             dfs_flags++;
                         }
                         else{
-                            if(dfs_flags == 0 && (result == 1 || result == 0) ){
+                            if(dfs_flags == 0){//nbodyzxc
                                 printf("\n%d %d  -- = falgs = %f \n" , i , j , dfs_flags );
                                 puts("\n\n may right vvv\n\n");
                                 puts("-----------flags no left !!!!-------------");
@@ -569,12 +476,11 @@ void dfs(POINT argpt){
 
                                 dfs_flags++;
                                 game_plat_possible ++;
-                                //								Sleep(20000);
-                                //	return;
                             }
                             else{// == -1 || flags != 0
 
-
+                                int result = 0;
+                                //TODO check
                                 if(result == 1 || result == 0){
 
                                     int a , b;
@@ -629,9 +535,6 @@ void dfs(POINT argpt){
                                     print_map("rsnMap");
                                     puts("^  ^^  ^ final !!!\n\n\n");
                                     game_plat_possible ++;
-                                    //	print_map("dfs_count");
-                                    //	getchar();
-
                                     //recover rsnMap
                                     for(a = 0 ; a != MAPHI ; a++)
                                         for( b = 0 ; b != MAPWD ; b++)
@@ -654,7 +557,7 @@ void dfs(POINT argpt){
                         }
                     }
 
-                    rsnMap[i][j] = 0;//??
+                    rsnMap[i][j] = 0;
 
                     return;
                 }
@@ -694,7 +597,6 @@ void dfs(POINT argpt){
     temC = C(cntMap(UNK , rsnMap) , (int)dfs_flags);
     printf("A 0 %d ,flags %d\n" ,cntMap(UNK , rsnMap) , (int)dfs_flags);
     printf("add %f %d\n" , temC.num , temC.exp);
-    //	getchar();
     for(k = 0 ; k < MAPHI ; k++)
         for(l = 0 ; l < MAPWD ; l++){
             POINT pt = {l , k};
@@ -767,8 +669,8 @@ void gessClk(void){
                     }
                 }
                 for(i = 0 ; i < 8 ; i++)
-                   free(adjptr[idx]);
-               free(adjptr);
+                    free(adjptr[idx]);
+                free(adjptr);
             }
         }
     }
@@ -808,8 +710,6 @@ void gessClk(void){
                             pt.y = i;
                             pt.x = j;
                         }
-                    }
-                    else{
                     }
                 }
             }

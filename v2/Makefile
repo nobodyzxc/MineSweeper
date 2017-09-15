@@ -12,7 +12,7 @@ _SRCS    = ${SRCS:%=%.c}
 _OBJS    = ${SRCS:%=%.o}
 MAIN     = main
 _MAIN    = ${MAIN:%=%.c}
-TRGT     = sol
+TRGT     = execute
 
 all:
 ifeq ($(OS),Windows_NT)

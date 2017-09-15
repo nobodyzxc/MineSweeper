@@ -102,6 +102,7 @@ int analySpt(POINT pt , bool update){
 int analyRecr(POINT pt , int visit[][MAPWD]){
 
     int idx , rtn = 0;
+
     POINT **adjptr = adjPts(pt);
     for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
         if(PTON(*adjptr[idx] , visit))
@@ -126,7 +127,7 @@ LPDWORD GetBMptr(bool update){
     static HBITMAP hbmOld;
     static HDC hdcMem;
 
-    if(!update && !lpBits) puts("fuck!BMptr") , exit(0);
+    if(!update && !lpBits) puts("BMptr should init") , exit(0);
     if(!update) return lpBits;
 
 
