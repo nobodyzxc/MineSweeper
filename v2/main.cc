@@ -61,20 +61,90 @@ struct notation C(int P , int C);
 void addC(struct notation *beadd , struct notation add);
 void dfs(POINT);
 
+#define EQS(a , b) (!strcmp(a , b))
+#define SWAP(a , b) \
+    do{ \
+        int ____ = a; \
+        a = b , b = ____; \
+    }while(0)
 
+int scan = 0 , locYX = 0 , hide = 0 ,
+    relocY = -1 , relocX = -1 , relay = 0;
 
 int main(int argc , char *argv[]){
+    if(argc > 1){
+        int i;
+
+        for(i = 1 ; i < argc ; i++){
+            if(EQS(argv[i] , "-s"))
+                scan = 1 , relay = 1;
+            if(EQS(argv[i] , "-xy"))
+                locYX = -i;
+            if(EQS(argv[i] , "-yx"))
+                locYX = i;
+            if(EQS(argv[i] , "-b"))
+                hide = 1;
+            if(EQS(argv[i] , "-r"))
+                relay = 1;
+            puts(argv[i]);
+
+        }
+        if(locYX){
+            if(locYX < 0){
+                SWAP(relocX , relocY);
+                locYX = -locYX;
+            }
+
+            printf("%d\n" , locYX);
+            if(argc <= locYX + 2)
+                puts("please give your YX") , exit(0);
+
+            int _;
+            _ += sscanf(argv[locYX + 1] ,
+                    "%d" , &relocY);
+
+            _ += sscanf(argv[locYX + 2] ,
+                    "%d" , &relocX);
+
+            if(_ != 2)
+                puts("parse YX failed") , exit(0);
+        }
+
+    }
 
     srand(time(NULL));
-    initApi();
+
+    {
+        getGameWin();
+        checkResolution();
+
+        if(locYX)
+            setZEROLoc(relocY , relocX);
+        else
+            setFormLoc();
+
+        if(!hide)
+            showGamePane();
+        else puts("back");
+
+        initMouse();
+    }
+
     initMap();
 
-    POINT pt = {-1 , -1};
-    click(pt , LEFT);
+    if(relay){
+        analyMap(true);
+        if(scan) printWithExh(map) , exit(0);
+    }
+    else{
+        POINT pt = {-1 , -1};
+        click(pt , LEFT);
 
-    pt.x = 15 , pt.y = 8;
-    click(pt , LEFT);
-    analyAftClk(pt , LEFT);
+        pt.x = 15 , pt.y = 8; //open center
+
+        click(pt , LEFT);
+        analyAftClk(pt , LEFT);
+    }
     printTab(map);
     flags = (float)(FLAGNUM - cntMap(FLG , map));
 #ifdef DEBUG
@@ -107,9 +177,7 @@ int Gaming(void){
 
     while(1){
 
-        int pass = 1;
-        if(cntMap(UNK , map) == MAPHI * MAPWD && pass){
-            pass = 0;
+        if(cntMap(UNK , map) == MAPHI * MAPWD){
             puts("guess");
             exit(0);
             gessClk();

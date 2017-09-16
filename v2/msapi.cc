@@ -8,29 +8,16 @@
 
 extern HWND GameHwnd;
 
-void initApi(){
+void initApi(int y , int x){
     getGameWin();
     checkResolution();
     setFormLoc();
-#define WEB
-
-#ifdef WEB
-#else
     showGamePane();
-#endif
     initMouse();
 }
 
 extern POINT ZERO;
 void showGamePane(){
-
-    HWND top = WindowFromPoint(ZERO);
-    HWND lst = GetWindow(GameHwnd , 5);
-    while(lst){
-        if(top == lst) return;
-        lst = GetWindow(lst , 5);
-    }
-
     ShowWindow(GameHwnd , 2);
     ShowWindow(GameHwnd , SW_SHOWNORMAL);
     w_usleep(750000);

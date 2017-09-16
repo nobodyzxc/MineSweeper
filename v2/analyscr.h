@@ -78,6 +78,8 @@ void getGameWin();
 
 void setFormLoc();
 
+void setZEROLoc(int y , int x);
+
 COLORREF GetPx(int x , int y , bool update);
 
 int analySpt(POINT pt , bool update);

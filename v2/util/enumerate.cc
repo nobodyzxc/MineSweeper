@@ -3,6 +3,7 @@
 #include<cstdlib>
 #include<cstdio>
 #include<cmath>
+#include<algorithm>
 using namespace std;
 
 int counts = 0;
@@ -79,7 +80,10 @@ int allCnt(char type , vector<vector<char> > mat){
 
 void input(){
     string s;
-    while(cin >> s){
+    while(getline(cin , s)){
+        size_t pos;
+        while((pos = s.find(' ')) != string::npos)
+            s.erase(pos , 1);
         vector<char> v;
         vector<int> f;
         for(uint i = 0 ; i < s.size() ; i++)
@@ -91,20 +95,32 @@ void input(){
 }
 
 void output(){
-    char fmt[2][30];
-    int maxv = 0 , w;
+    char fmt[3][30] , sm[30];
+    int maxv = 0 , w , hun = 0;
     for(uint i = 0 ; i < freq.size() ; i++)
-        for(uint j = 0 ; j < freq[i].size() ; j++)
+        for(uint j = 0 ; j < freq[i].size() ; j++){
             maxv = maxv > freq[i][j] ? maxv : freq[i][j];
+            if(freq[i][j] > 99 and freq[i][j] < 1000) hun = 1;
+        }
     w = (int)log10(maxv) + 1;
+    if(w < 2) w = 2;
+    if(w > 3 and not hun) w = 2;
     sprintf(fmt[0] , "\033[1;33m%%%dd\033[0m " , w);
-    sprintf(fmt[1] , "%%%dc " , w);
+    sprintf(fmt[1] , "%%%dc " , w); 
+    sprintf(fmt[2] , "%%%ds " , w);
     for(uint i = 0 ; i < freq.size() ; i++){
         for(uint j = 0 ; j < freq[i].size() ; j++){
-            if(freq[i][j])
-                printf(fmt[0] , freq[i][j]);
-            else
+            if(freq[i][j] == 0)
                 printf(fmt[1] , m[i][j]);
+            else if(freq[i][j] < 999)
+                printf(fmt[0] , freq[i][j]);
+            else{
+                int e = (int)log10(freq[i][j]);
+                //sprintf(sm , "\x1b[32m%d\x1b[31m%d\033[0m" ,
+                sprintf(sm , "\x1b[32m%d\033[01;31m%d\033[0m" , 
+                        freq[i][j] / (int)pow(10 , e) , e);
+                printf(fmt[2] , sm);
+            }
         }
         cout << endl;
     }
@@ -130,7 +146,7 @@ void addrslt(vector<vector<char> > mat){
     printV(mat);
     for(int i = 0 ; i < mat.size() ; i++)
         for(int j = 0 ; j < mat[i].size() ; j++)
-            if(mat[i][j] == 'X') freq[i][j] += 1;
+            if(mat[i][j] == 'F') freq[i][j] += 1;
 }
 
 #define isNULL(p) ((p).y == -1 or (p).x == -1)
@@ -150,7 +166,7 @@ bool legalSuppose(int y , int x){
         //printf("arpt %d %d(%d)\n" ,
         //        p.y , p.x , ctoi(PTON(p , m)));
         if(isdigit(m[p.y][p.x])){
-            int bomb = adjCnt(p , 'X' , m);
+            int bomb = adjCnt(p , 'F' , m);
             int ukwn = adjCnt(p , '.' , m);
         //    printf("arpt %d %d(%d):b %d , u %d\n" ,
         //            p.y , p.x , ctoi(PTON(p , m)) ,
@@ -194,14 +210,14 @@ bool expand(int y ,int x , vector<vector<int> > mrk){
     POINT loc = {x , y}; // the point is not number
     RPTP(loc , p , {
         if(isdigit(m[p.y][p.x])){
-            int bomb = adjCnt(p , 'X' , m);
+            int bomb = adjCnt(p , 'F' , m);
             int ukwn = adjCnt(p , '.' , m);
             if(ukwn != 0){
                 if(bomb == ctoi(m[p.y][p.x]))
                     if(not fill('_' , p , mrk))
                         return false;
                 else if(ukwn + bomb == ctoi(m[p.y][p.x]))
-                    if(not fill('X' , p , mrk))
+                    if(not fill('F' , p , mrk))
                         return false;
             }
         }
@@ -227,7 +243,7 @@ void recover(vector<vector<char> > &o ,
 }
 
 void dfs(int y , int x){
-    char it[3] = "_X";
+    char it[3] = "_F";
     POINT nxt = next(y , x);
     if(m[y][x] == '.'){
         for(int i = 0 ; i < 2 ; i++){

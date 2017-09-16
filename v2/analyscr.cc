@@ -48,7 +48,8 @@ int FORMLOCY(){
 
 void getGameWin(){
     GameHwnd = FindWindow(NULL , "Minesweeper");
-    if(!GameHwnd) puts("Please start your game.") , exit(0);
+    if(!GameHwnd)
+        puts("Please start your game.") , exit(0);
 }
 
 void setFormLoc(){
@@ -68,8 +69,11 @@ void setFormLoc(){
     ZERO.y = Msrc.top + MAP_O_FIX_Y;
     printf("ZERO.x = %d , ZERO.y = %d\n" ,
             ZERO.x , ZERO.y);
-    //my chrome
-    //ZERO.x = 256 , ZERO.y = 171
+
+}
+
+void setZEROLoc(int y , int x){
+    ZERO.y = y , ZERO.x = x;
 }
 
 COLORREF GetPx(int x , int y , bool update){

@@ -39,6 +39,7 @@ void click(POINT pt , int type) {
     if(!~pt.x && !~pt.y){
         mus.y = WINLOCY;
         mus.x = WINLOCX;
+        puts("ccc");
     }
     else if(PTINMAP(pt)){
         mus.y = CellCenY(pt.y);

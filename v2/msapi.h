@@ -49,7 +49,7 @@
 //        free(p_var); \
 //    }while(0);
 //
-void initApi();
+void initApi(int y , int x);
 
 void showGamePane();
 
