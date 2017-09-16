@@ -26,6 +26,7 @@ bool legalRsn(POINT argpt){
             else if(PTON(*adjptr[idx] , rsnMap) > flgs
                     && unks == 0)
                 rtn = false; /* no space left to add flags */
+            // else if(mrk > flgs + unks) false; ??
         }
     }
 

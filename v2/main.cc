@@ -81,8 +81,7 @@ int main(void){
     return EXPECT(Gaming() , LOS);
 #else
     Gaming();
-    printf("flags left:%d , block left:%d\n"
-            , int(flags) , cntMap(UNK , map));
+    printf("flags left:%d , block left:%d\n" , (int)flags , cntMap(UNK , map));
     return 0;
 #endif
 }
@@ -193,18 +192,13 @@ int dirSng(POINT pt){
 }
 
 void addFlgArd(POINT pt){
-    POINT **adjptr = adjPts(pt);
-    int idx = 0;
-    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
+    RPTP(pt , adjptr , idx , {
         if(PTON(*adjptr[idx] , map) == UNK){
             click(*adjptr[idx] , RIGHT);
             PTON(*adjptr[idx] , map) = FLG;
             flags--;
         }
-    }
-    for(idx = 0 ; idx < 8 ; idx++)
-        free(adjptr[idx]);
-    free(adjptr);
+    });
     return ;
 }
 
@@ -255,11 +249,8 @@ int suppose(int what){
 
 int rsning(POINT pt){//input a space with num arround !
 
-    int idx = 0;
-    POINT **adjptr = adjPts(pt);
-    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
 
-        puts("fuck here");
+    RPTP(pt , adjptr , idx , {
 
         printf("adj*Num (%d,%d)\n" , adjptr[idx]->y ,
                 adjptr[idx]->x);
@@ -309,10 +300,7 @@ int rsning(POINT pt){//input a space with num arround !
             adjCnt(*adjptr[idx] , UNK , rsnMap);
             return 1;
         }
-    }
-    for(idx = 0 ; idx < 8 ; idx++)
-        free(adjptr[idx]);
-    free(adjptr);
+    });
 
     return 0;
 }
@@ -322,23 +310,20 @@ int rsnExpn(POINT pt , int type){
     if(type != FLG && type != SAF)
         puts("wrong type @ rsnExpn") , exit(0);
 
-    POINT que[8] , **adjptr = adjPts(pt);
-    int quelen = 0 , idx;
-    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
-        if(PTON(*adjptr[idx] , rsnMap) == UNK){
-            PTON(*adjptr[idx] , rsnMap) = type;
-            que[idx].y = adjptr[idx]->y;
-            que[idx].x = adjptr[idx]->x;
+    int quelen = 0;
+    POINT que[8];
+    RPTP(pt , ap_var , p_idx , {
+        if(PTON(*ap_var[p_idx] , rsnMap) == UNK){
+            PTON(*ap_var[p_idx] , rsnMap) = type;
+            que[p_idx].y = ap_var[p_idx]->y;
+            que[p_idx].x = ap_var[p_idx]->x;
             quelen++;
         }
-    }
-    for(idx = 0 ; idx < 8 ; idx++)
-        free(adjptr[idx]);
-    free(adjptr);
+    });
 
     printTab(rsnMap);
 
-    for(idx = 0 ; idx < quelen ; idx++)
+    for(int idx = 0 ; idx < quelen ; idx++)
         if(rsning(que[idx])) return 1;
 
     return 0;
@@ -356,28 +341,17 @@ int cntMap(int what, int mat[][MAPWD]) {
 }
 
 int adjCnt(POINT pt , int type , int mat[][MAPWD]) {
-    int rtn = 0 , idx = 0;
-    POINT **adjptr = adjPts(pt);
-    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
-        if(PTON(*adjptr[idx] , mat) == type)
-            rtn++;
-    }
-    for(idx = 0 ; idx < 8 ; idx++)
-        free(adjptr[idx]);
-    free(adjptr);
+    int rtn = 0;
+    RPTP(pt , adjptr , idx ,
+            { if(PTON(*adjptr[idx] , mat) == type) rtn++; });
     return rtn;
 }
 
 int adjCntMrk(POINT pt , int mat[][MAPWD]){
-    int rtn = 0 , idx = 0;
-    POINT **adjptr = adjPts(pt);
-    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
-        if(HASBOMB(mat , *adjptr[idx]))
-            rtn++;
-    }
-    for(idx = 0 ; idx < 8 ; idx++)
-        free(adjptr[idx]);
-    free(adjptr);
+    int rtn = 0;
+    RPTP(pt , adjptr , idx , {
+        if(HASBOMB(mat , *adjptr[idx])) rtn++;
+    });
     return rtn;
 }
 
@@ -428,16 +402,10 @@ void analyAftClk(POINT pt , int type){
         }
     }
     else if(type == RIGHT){
-        int idx = 0;
-        POINT **adjptr = adjPts(pt);
-        if(!adjPts) puts("adjPts error");
-        for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
+        RPTP(pt , adjptr , idx , {
             dirSng(*adjptr[idx]);
-        }
-        for(idx = 0 ; idx < 8 ; idx++)
-            free(adjptr[idx]);
-        free(adjptr);
+            });
     }
 }
 
-#include "dirty.c"
+#include "dirty.cc"

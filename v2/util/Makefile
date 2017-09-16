@@ -1,4 +1,4 @@
 all:
-	g++ enum.cc
+	g++ enumerate.cc
 clean:
-	rm a.exe
+	rm a.exe a.exe.*

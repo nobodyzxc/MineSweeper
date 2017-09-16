@@ -8,10 +8,10 @@ endif
 
 CXXFLAGS = -g -static -mwindows
 SRCS     = msapi analyscr ctrlmus
-_SRCS    = ${SRCS:%=%.c}
+_SRCS    = ${SRCS:%=%.cc}
 _OBJS    = ${SRCS:%=%.o}
 MAIN     = main
-_MAIN    = ${MAIN:%=%.c}
+_MAIN    = ${MAIN:%=%.cc}
 TRGT     = execute
 
 all:

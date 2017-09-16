@@ -2,6 +2,7 @@
 #define ANALYSCR_H
 
 #include<windows.h>
+#include<stdbool.h>
 #include"mark.h"
 #include"game.h"
 /* MAPHI MAPWD */

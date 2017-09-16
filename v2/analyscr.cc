@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<unistd.h>
+#include<stdbool.h>
 
 #include"game.h"
 #include"mark.h"
@@ -103,20 +104,16 @@ int analyRecr(POINT pt , int visit[][MAPWD]){
 
     int idx , rtn = 0;
 
-    POINT **adjptr = adjPts(pt);
-    for(idx = 0 ; idx < 8 && adjptr[idx] ; idx++){
-        if(PTON(*adjptr[idx] , visit))
+    RPTP(pt , p_var , p_idx , {
+        if(PTON(*p_var[p_idx] , visit))
             continue;
-        PTON(*adjptr[idx] , visit) = true;
-        if(PTON(*adjptr[idx] , map) == UNK)
-            analySpt(*adjptr[idx] , false);
+        PTON(*p_var[p_idx] , visit) = true;
+        if(PTON(*p_var[p_idx] , map) == UNK)
+            analySpt(*p_var[p_idx] , false);
+        if(PTON(*p_var[p_idx] , map) == SAF)
+            analyRecr(*p_var[p_idx] , visit);
+    });
 
-        if(PTON(*adjptr[idx] , map) == SAF)
-            analyRecr(*adjptr[idx] , visit);
-    }
-    for(idx = 0 ; idx < 8 ; idx++)
-        free(adjptr[idx]);
-    free(adjptr);
     return rtn;
 }
 

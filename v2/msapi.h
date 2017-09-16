@@ -26,12 +26,12 @@
         int pidx_var; \
         POINT **p_var = adjPts(point); \
         for(pidx_var = 0 ; pidx_var < 8 && \
-                p[pidx_var] ; pidx_var++){ \
+                p_var[pidx_var] ; pidx_var++){ \
             stat; \
         } \
         for(pidx_var = 0 ; pidx_var < 8 ; pidx_var++) \
-            free(p[pidx_var]); \
-        free(p); \
+            free(p_var[pidx_var]); \
+        free(p_var); \
     }while(0);
 
 void initApi();
