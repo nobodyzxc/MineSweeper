@@ -1,6 +1,7 @@
 #ifndef MINEAPI_H
 #define MINEAPI_H
 
+
 #include<windows.h>
 
 #include"game.h"
@@ -21,19 +22,33 @@
 
 #define OPENED(mp , p) (!UNOPEN(mp , p))
 
-#define RPTP(point , p_var , pidx_var , stat) \
+#define RPTP(begp , p_var , stat) \
     do{ \
-        int pidx_var; \
-        POINT **p_var = adjPts(point); \
-        for(pidx_var = 0 ; pidx_var < 8 && \
-                p_var[pidx_var] ; pidx_var++){ \
+        int _pidx; \
+        POINT **_pp = adjPts(begp); \
+        for(_pidx = 0 ; _pidx < 8 && \
+                _pp[_pidx] ; _pidx++){ \
+            POINT p_var = *_pp[_pidx]; \
             stat; \
         } \
-        for(pidx_var = 0 ; pidx_var < 8 ; pidx_var++) \
-            free(p_var[pidx_var]); \
-        free(p_var); \
+        for(_pidx = 0 ; _pidx < 8 ; _pidx++) \
+        free(_pp[_pidx]); \
+        free(_pp); \
     }while(0);
 
+//#define RPTP(point , p_var , pidx_var , stat) \
+//    do{ \
+//        int pidx_var; \
+//        POINT **p_var = adjPts(point); \
+//        for(pidx_var = 0 ; pidx_var < 8 && \
+//                p_var[pidx_var] ; pidx_var++){ \
+//            stat; \
+//        } \
+//        for(pidx_var = 0 ; pidx_var < 8 ; pidx_var++) \
+//            free(p_var[pidx_var]); \
+//        free(p_var); \
+//    }while(0);
+//
 void initApi();
 
 void showGamePane();

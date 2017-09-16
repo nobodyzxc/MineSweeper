@@ -48,10 +48,10 @@ POINT **adjPts(POINT pt){
     return rtn;
 }
 
-#define RPTP(point , p_var , stat) \
+#define RPTP(begp , p_var , stat) \
     do{ \
         int _pidx; \
-        POINT **_pp = adjPts(point); \
+        POINT **_pp = adjPts(begp); \
         for(_pidx = 0 ; _pidx < 8 && \
                 _pp[_pidx] ; _pidx++){ \
             POINT p_var = *_pp[_pidx]; \

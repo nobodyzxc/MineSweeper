@@ -12,7 +12,12 @@ void initApi(){
     getGameWin();
     checkResolution();
     setFormLoc();
+#define WEB
+
+#ifdef WEB
+#else
     showGamePane();
+#endif
     initMouse();
 }
 

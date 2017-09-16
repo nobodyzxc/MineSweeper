@@ -66,6 +66,10 @@ void setFormLoc(){
     }
     ZERO.x = Msrc.left + MAP_O_FIX_X;
     ZERO.y = Msrc.top + MAP_O_FIX_Y;
+    printf("ZERO.x = %d , ZERO.y = %d\n" ,
+            ZERO.x , ZERO.y);
+    //my chrome
+    //ZERO.x = 256 , ZERO.y = 171
 }
 
 COLORREF GetPx(int x , int y , bool update){
@@ -104,14 +108,14 @@ int analyRecr(POINT pt , int visit[][MAPWD]){
 
     int idx , rtn = 0;
 
-    RPTP(pt , p_var , p_idx , {
-        if(PTON(*p_var[p_idx] , visit))
+    RPTP(pt , p , {
+        if(PTON(p , visit))
             continue;
-        PTON(*p_var[p_idx] , visit) = true;
-        if(PTON(*p_var[p_idx] , map) == UNK)
-            analySpt(*p_var[p_idx] , false);
-        if(PTON(*p_var[p_idx] , map) == SAF)
-            analyRecr(*p_var[p_idx] , visit);
+        PTON(p , visit) = true;
+        if(PTON(p , map) == UNK)
+            analySpt(p , false);
+        if(PTON(p , map) == SAF)
+            analyRecr(p , visit);
     });
 
     return rtn;
