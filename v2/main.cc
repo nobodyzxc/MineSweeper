@@ -8,9 +8,9 @@
 #include<string.h>
 #include<stdlib.h>
 #include<signal.h>
-
 #include<time.h>
 #include<unistd.h>
+#include<libgen.h>
 
 #include<memory.h>
 
@@ -47,6 +47,7 @@ int adjCnt(POINT , int , int mata[][MAPWD]);
 int adjCntMrk(POINT pt , int mat[][MAPWD]);
 void printWithExh(int tab[][MAPWD]);
 void analyAftClk(POINT pt , int);
+void parseFlags(int argc , char *argv[]);
 
 int need_flag(void);
 bool legalRsn(POINT argpt);
@@ -72,50 +73,12 @@ int scan = 0 , locYX = 0 , hide = 0 ,
     relocY = -1 , relocX = -1 , relay = 0;
 
 int main(int argc , char *argv[]){
-    if(argc > 1){
-        int i;
 
-        for(i = 1 ; i < argc ; i++){
-            if(EQS(argv[i] , "-s"))
-                scan = 1 , relay = 1;
-            if(EQS(argv[i] , "-xy"))
-                locYX = -i;
-            if(EQS(argv[i] , "-yx"))
-                locYX = i;
-            if(EQS(argv[i] , "-b"))
-                hide = 1;
-            if(EQS(argv[i] , "-r"))
-                relay = 1;
-            puts(argv[i]);
-
-        }
-        if(locYX){
-            if(locYX < 0){
-                SWAP(relocX , relocY);
-                locYX = -locYX;
-            }
-
-            printf("%d\n" , locYX);
-            if(argc <= locYX + 2)
-                puts("please give your YX") , exit(0);
-
-            int _;
-            _ += sscanf(argv[locYX + 1] ,
-                    "%d" , &relocY);
-
-            _ += sscanf(argv[locYX + 2] ,
-                    "%d" , &relocX);
-
-            if(_ != 2)
-                puts("parse YX failed") , exit(0);
-        }
-
-    }
+    parseFlags(argc , argv);
 
     srand(time(NULL));
 
     {
-        getGameWin();
         checkResolution();
 
         if(locYX)
@@ -157,6 +120,70 @@ int main(int argc , char *argv[]){
 #endif
 }
 
+void parseFlags(int argc , char *argv[]){
+    if(argc > 0){
+        int i , j;
+
+        for(i = 1 ; i < argc ; i++){
+            if(EQS(argv[i] , "-h"))
+                printf("%s %s" ,
+                        basename(argv[0]) ,
+                        "[-sbr] "
+                        "[-xy X_POS Y_POS] "
+                        "[-yx Y_POS X_POS]\n\n"
+                        "-s  scan the map only\n"
+                        "-b  solve without "
+                        "poping up nw game\n"
+                        "-r  relay the game\n"
+                        "-xy X_POS Y_POS "
+                        "assign X and Y\n"
+                        "-yx Y_POS X_POS "
+                        "assign Y and X\n") ,
+                    exit(0);
+            else if(EQS(argv[i] , "-xy"))
+                locYX = -i;
+            else if(EQS(argv[i] , "-yx"))
+                locYX = i;
+            else if(argv[i][0] == '-')
+                for(j = 1 ; j < strlen(argv[i]) ; j++)
+                    if(argv[i][j] == 's')
+                        scan = 1 , relay = 1;
+                    else if(argv[i][j] == 'b')
+                        hide = 1;
+                    else if(argv[i][j] == 'r')
+                        relay = 1;
+                    else{
+                        printf("unknown flag %c in %s\n"
+                                , argv[i][j] , argv[i]);
+                        exit(0);
+                    }
+            else if((locYX == 0)
+                    or (i != abs(locYX) + 1
+                        and i != abs(locYX) + 2))
+                printf("unknown parameter %s\n" , argv[i]) , exit(0);
+        }
+        if(locYX){
+            if(locYX < 0){
+                SWAP(relocX , relocY);
+                locYX = -locYX;
+            }
+
+            if(argc <= locYX + 2)
+                puts("please give your YX") , exit(0);
+
+            int _;
+            _ += sscanf(argv[locYX + 1] ,
+                    "%d" , &relocY);
+
+            _ += sscanf(argv[locYX + 2] ,
+                    "%d" , &relocX);
+
+            if(_ != 2)
+                puts("parse YX failed") , exit(0);
+        }
+
+    }
+}
 
 void initMap(){
     int i , j;
@@ -168,7 +195,6 @@ void initMap(){
         }
     }
 }
-
 
 int Gaming(void){
     int i , j , modify = 0;

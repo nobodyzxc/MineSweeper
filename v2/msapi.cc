@@ -9,7 +9,6 @@
 extern HWND GameHwnd;
 
 void initApi(int y , int x){
-    getGameWin();
     checkResolution();
     setFormLoc();
     showGamePane();
