@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include <stdio.h>
 #include "ctrlmus.h"
 #include "msapi.h"
 
@@ -81,4 +81,16 @@ void click(POINT pt , int type) {
     if(type == LEFT)
         printf("open @ (%d , %d)\n" , pt.y , pt.x);
     return;
+}
+
+void clickLeft(POINT p){
+    return click(p , LEFT);
+}
+
+void clickRight(POINT p){
+    return click(p , RIGHT);
+}
+
+void clickBoth(POINT p){
+    return click(p , BOTH);
 }

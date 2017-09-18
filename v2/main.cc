@@ -101,11 +101,11 @@ int main(int argc , char *argv[]){
     }
     else{
         POINT pt = {-1 , -1};
-        click(pt , LEFT);
+        clickLeft(pt);
 
         pt.x = 15 , pt.y = 8; //open center
 
-        click(pt , LEFT);
+        clickLeft(pt);
         analyAftClk(pt , LEFT);
     }
     printTab(map);
@@ -273,7 +273,7 @@ int dirSng(POINT pt){
             else if(adjFlgNum == map[pt.y][pt.x]){
                 printf("(%d %d) expand\n" , pt.y , pt.x);
                 modify = 1;
-                click(pt , BOTH);
+                clickBoth(pt);
                 PTON(pt , exh) = true;
                 analyAftClk(pt , BOTH);
             }
@@ -291,7 +291,7 @@ int dirSng(POINT pt){
 void addFlgArd(POINT pt){
     RPTP(pt , p , {
         if(PTON(p , map) == UNK){
-            click(p , RIGHT);
+            clickRight(p);
             PTON(p , map) = FLG;
             flags--;
         }
@@ -326,11 +326,11 @@ int suppose(int what){
                     printWithExh(map);
 
                     if(what == FLG){
-                        click(pt , LEFT);
+                        clickLeft(pt);
                         analyAftClk(pt , LEFT);
                     }
                     else if(what == SAF){
-                        click(pt , RIGHT);
+                        clickRight(pt);
                         PTON(pt , map) = FLG;
                         flags--;
                         dirSng(pt);
@@ -431,8 +431,8 @@ int cntMap(int what, int mat[][MAPWD]) {
     if(!(what <= ERR && what >= UNK))
         puts("cntMap Error") , exit(0);
 
-    for (i = 0; i < MAPHI; i++)
-        for (j = 0; j < MAPWD; j++)
+    for(i = 0; i < MAPHI; i++)
+        for(j = 0; j < MAPWD; j++)
             rtn += mat[i][j] == what;
     return rtn;
 }

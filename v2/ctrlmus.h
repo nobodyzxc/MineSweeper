@@ -5,4 +5,7 @@
 enum { LEFT , BOTH , RIGHT };
 void initMouse(void);
 void click(POINT pt , int type);
+void clickLeft(POINT p);
+void clickRight(POINT p);
+void clickBoth(POINT p);
 #endif

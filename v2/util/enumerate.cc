@@ -5,7 +5,10 @@
 #include <cmath>
 #include <algorithm>
 #include <cstring>
+
+#include "../mark.h"
 #include "util.cc"
+#include "point.h"
 
 typedef unsigned long long ull;
 typedef unsigned int uint;
@@ -17,16 +20,8 @@ int counts = 0 , ref_flg = 0 ,
     remain_flags = 0 , omitcount = 0;
 
 
-struct POINT{ int x , y; };
-
 vector<vector<char> > m;
 vector<vector<ull> > freq;
-
-#define PTINMAP(p , m) \
-    ((p).x < (int)m[0].size() && (p).x >= 0 \
-     && (p).y < (int)m.size() && (p).y >= 0)
-
-#define PTON(p , mp) ((mp)[(p).y][(p).x])
 
 #define RPT2V(v , i , j) \
     for(uint i = 0 ; i < v.size() ; i++) \
@@ -40,52 +35,18 @@ vector<vector<ull> > freq;
         stat1; \
     }
 
-POINT **adjPts(POINT pt){
-    POINT **rtn =
-        (POINT**)calloc(8 , sizeof(POINT*)) ,
-        d[] = {
-            {0 , -1} , { 1 , -1} ,
-            {1 ,  0} , { 1 ,  1} ,
-            {0 ,  1} , {-1 ,  1} ,
-            {-1 , 0} , {-1 , -1} ,
-        };
-    if(!rtn) puts("calloc failed!") , exit(0);
-    int i , idx = 0;
-    for(i = 0 ; i < 8 ; i++){
-        POINT tmp = {
-            pt.x + d[i].x ,
-            pt.y + d[i].y
-        };
-
-        if(PTINMAP(tmp , m)){
-            rtn[idx] =
-                (POINT*)malloc(sizeof(POINT));
-            rtn[idx]->x = tmp.x;
-            rtn[idx]->y = tmp.y;
-            idx++;
-        }
-    }
-    return rtn;
+template <typename T>
+void printV(vector<vector<T> > mat){
+    //return;
+    NRPT2V(mat , i , j ,
+            cout << mat[i][j] << ' ' ,
+            cout << endl);
 }
-
-#define RPTP(begp , p_var , stat) \
-    do{ \
-        int _pidx; \
-        POINT **_pp = adjPts(begp); \
-        for(_pidx = 0 ; _pidx < 8 && \
-                _pp[_pidx] ; _pidx++){ \
-            POINT p_var = *_pp[_pidx]; \
-            stat; \
-        } \
-        for(_pidx = 0 ; _pidx < 8 ; _pidx++) \
-        free(_pp[_pidx]); \
-        free(_pp); \
-    }while(0);
 
 int adjCnt(POINT pt , char type ,
         vector<vector<char> > mat){
     int rtn = 0;
-    RPTP(pt , p , { if(PTON(p , mat) == type) rtn++; });
+    RPTP(mat , pt , p , { if(PTON(p , mat) == type) rtn++; });
     return rtn;
 }
 
@@ -114,20 +75,16 @@ void input(){
         while((pos = s.find('\r')) != string::npos)
             s.erase(pos , 1); // f*** windows
         if(s.size() == 0) continue;
-        vector<char> v;
-        vector<ull> f;
-        for(uint i = 0 ; i < s.size() ; i++)
-            v.push_back(s[i]) , f.push_back(0);
-        m.push_back(v) , freq.push_back(f);
+        m.push_back(vector<char>(s.begin() , s.end()));
+        freq.push_back(vector<ull>(s.size() , 0));
     }
-
     RPT2V(m , i , j)
         if(omit(i , j)) m[i][j] = 'O';
     omitcount = allCnt('O' , m);
 }
 
 void output(){
-    char fmt[4][30] , sm[100];
+    char fmt[3][60] , ofmt[3][60] , sm[200]; //
     int maxv = 0 , w , hun = 0;
     RPT2V(freq , i , j){
         maxv = maxv > freq[i][j] ? maxv : freq[i][j];
@@ -137,16 +94,28 @@ void output(){
     if(w < 2) w = 2;
     if(w > 3 and not hun) w = 2;
     else w = 3;
-    sprintf(fmt[0] , "\033[1;30m%%%dc\033[0m " , w);
-    sprintf(fmt[1] , "%%%dc " , w);
-    sprintf(fmt[2] , "\033[1;33m%%%dlld\033[0m " , w);
-    NRPT2V(freq , i , j ,
-            if(not ref_flg and m[i][j] == 'O')
-                printf(fmt[0] , 'O');
-            else if(m[i][j] != '.')
-                printf(fmt[1] , m[i][j]);
-            else if(freq[i][j] < 999)
-                printf(fmt[2] , freq[i][j]);
+    sprintf(ofmt[0] , "\033[1;30m%%%dc\033[0m " , w);
+    sprintf(ofmt[1] , "\033[1;30m%%%dlld\033[0m " , w);
+    sprintf(ofmt[2] , "\x1b[1;30m%d\033[0;37m%d\033[0m");//%%?
+
+    sprintf(fmt[0] , "%%%dc " , w);
+    sprintf(fmt[1] , "\033[1;33m%%%dlld\033[0m " , w);
+    //sprintf(fmt[2] , "\x1b[32m%d\033[01;31m%d\033[0m");
+    sprintf(fmt[2] , "\x1b[32m%d\033[01;31m%d\033[0m");
+
+    //NRPT2V(freq , i , j , {
+    for(uint i = 0 ; i < freq.size() ; i++){
+        for(uint j = 0 ; j < freq[i].size() ; j++){
+            //printf("\n=> %d %d %c %lld\n" , i , j , m[i][j] , freq[i][j]);
+            if(not ref_flg and m[i][j] == 'O'){
+                printf(ofmt[0] , '.');
+            }
+            else if(m[i][j] != '.' and m[i][j] != 'O'){
+                printf(fmt[0] , m[i][j]);
+            }
+            else if(freq[i][j] < 999){
+                printf((m[i][j] == 'O' ? ofmt[1] : fmt[1]) , freq[i][j]);
+            }
             else{
                 int e = (int)log10(freq[i][j]);
                 int cap = freq[i][j] / (ull)pow(10.0f , (double)e);
@@ -154,41 +123,39 @@ void output(){
 //#define TRY_BUG
 #ifdef TRY_BUG
                 //printf("\ne -> %d -->" , e);
+                sprintf(sm , (m[i][j] == 'O' ? ofmt[2] : fmt[2]) , //de
+#else
+                sprintf(sm , (m[i][j] == 'O' ?
+                         "\x1b[1;30m%d\033[0;37m%d\033[0m" :
+                         "\x1b[32m%d\033[01;31m%d\033[0m") , //de
 #endif
-                sprintf(sm , "\x1b[32m%d\033[01;31m%d\033[0m" ,
 #ifdef TRY_BUG
-                        freq[i][j] / (ull)pow(10.0f , (double)e) , e);
+                        (freq[i][j] / (ull)pow(10.0f , (double)e)) , e);
 #else
                         cap , e); // ^^ bug
 #endif
-
 #ifdef TRY_BUG
                 //puts(sm);
 #endif
                 if(w - (int)log10(e) - 2){
-                    sprintf(fmt[3] , "%%%dc%%s " , w - (int)log10(e) - 2);
-                    printf(fmt[3] , ' ' , sm);
+                    sprintf(fmt[2] , "%%%dc%%s " , w - (int)log10(e) - 2);
+                    printf(fmt[2] , ' ' , sm);
                 }
                 else{
-                    sprintf(fmt[3] , "%%s ");
-                    printf(fmt[3] , sm);
+                    sprintf(fmt[2] , "%%s ");
+                    printf(fmt[2] , sm);
                 }
-            } ,
-            cout << endl);
+            }
+            //printf("\n=> %d %d end\n" , i , j);
+        }// ,
+        cout << endl;
+    }
+
 }
 
 int ctoi(char c){
     return c >= '0' and c <= '9' ? c - '0' : -1;
 }
-
-template <typename T>
-void printV(vector<vector<T> > mat){
-    //return;
-    NRPT2V(mat , i , j ,
-            cout << mat[i][j] << ' ' ,
-            cout << endl);
-}
-
 
 void addrslt(vector<vector<char> > mat){
     if(ref_flg and remain_flags < 0) // from !=
@@ -231,7 +198,7 @@ POINT next(int y , int x){
 
 bool legalSuppose(int y , int x){
     POINT pt = {x , y};
-    RPTP(pt , p , {
+    RPTP(m , pt , p , {
         if(isdigit(m[p.y][p.x])){
             int bomb = adjCnt(p , 'F' , m);
             int ukwn = adjCnt(p , '.' , m);
@@ -250,7 +217,7 @@ bool expand(int y ,int x , vector<vector<int> > mrk);
 bool fill(char sym , POINT loc ,
         vector<vector<int> > mrk){
     vector<POINT> vp;
-    RPTP(loc , p , {
+    RPTP(m , loc , p , {
         if(m[p.y][p.x] == '.'){
             m[p.y][p.x] = sym;
             if(not legalSuppose(p.y , p.x))
@@ -274,7 +241,7 @@ bool expand(int y ,int x , vector<vector<int> > mrk){
     if(mrk[y][x]) return true;
     mrk[y][x] = 1;
     POINT loc = {x , y}; // the point is not number
-    RPTP(loc , p , {
+    RPTP(m , loc , p , {
         if(isdigit(m[p.y][p.x])){
             int bomb = adjCnt(p , 'F' , m);
             int ukwn = adjCnt(p , '.' , m);
@@ -346,4 +313,41 @@ int main(int argc , char *argv[]){
     output();
 
     printf("counts = %d , dfs = %d\n" , counts , dfscount);
+}
+
+bool
+imporved_sol(
+        int **map ,
+        int maphi ,
+        int mapwd ,
+        int flgs ,
+        void (*click_left)(POINT p) ,
+        void (*click_right)(POINT p)){
+
+    uint i = m.size();
+    while(i--) m[i].clear();
+    m.clear();
+    for(int i = 0 ; i < maphi ; i++){
+        m.push_back(vector<char>(0));
+        for(int j = 0 ; j < mapwd ; j++)
+            m[i].push_back(MSSYM[map[i][j]]);
+        freq.push_back(vector<ull>(mapwd , 0));
+    }
+    RPT2V(m , i , j)
+        if(omit(i , j)) m[i][j] = 'O';
+    omitcount = allCnt('O' , m);
+    remain_flags = flgs - allCnt('F' , m);
+    dfs(0 , 0 , 0.0f , 100.0f);
+
+    bool ex_zero = false;
+    /* open all zero */
+    RPT2V(m , i , j)
+        if(m[i][j] == '.' and freq[i][j] == 0){
+            POINT _ = {j , i};
+            ex_zero = true , click_left(_);
+        }
+    if(ex_zero) return true;
+
+    /* find min and open of max to flag */
+    return true;
 }
