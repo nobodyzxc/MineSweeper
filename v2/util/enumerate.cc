@@ -35,22 +35,21 @@ vector<vector<ull> > freq;
         stat1; \
     }
 
-template <typename T>
-void printV(vector<vector<T> > mat){
+void printV(vector<vector<char > > mat){
     //return;
     NRPT2V(mat , i , j ,
             cout << mat[i][j] << ' ' ,
             cout << endl);
 }
 
-int adjCnt(POINT pt , char type ,
+int cnt_adj(POINT pt , char type ,
         vector<vector<char> > mat){
     int rtn = 0;
     RPTP(mat , pt , p , { if(PTON(p , mat) == type) rtn++; });
     return rtn;
 }
 
-int allCnt(char type , vector<vector<char> > mat){
+int cnt_map(char type , vector<vector<char> > mat){
     int cnt = 0;
     RPT2V(m , i , j)
         if(m[i][j] == type) cnt++;
@@ -62,7 +61,7 @@ bool omit(int y , int x){
     POINT p = {x , y};
     int rtn = 0;
     for(int i = 0 ; i <= 8 ; i++)
-        rtn += adjCnt(p , i + '0' , m);
+        rtn += cnt_adj(p , i + '0' , m);
     return rtn == 0;
 }
 
@@ -80,7 +79,7 @@ void input(){
     }
     RPT2V(m , i , j)
         if(omit(i , j)) m[i][j] = 'O';
-    omitcount = allCnt('O' , m);
+    omitcount = cnt_map('O' , m);
 }
 
 void output(){
@@ -196,12 +195,12 @@ POINT next(int y , int x){
 
 #define isdigit(x) (x <= '9' and x >= '0')
 
-bool legalSuppose(int y , int x){
+bool legal_suppose(int y , int x){
     POINT pt = {x , y};
     RPTP(m , pt , p , {
         if(isdigit(m[p.y][p.x])){
-            int bomb = adjCnt(p , 'F' , m);
-            int ukwn = adjCnt(p , '.' , m);
+            int bomb = cnt_adj(p , 'F' , m);
+            int ukwn = cnt_adj(p , '.' , m);
             if(ctoi(PTON(p , m)) < bomb) return false;
             if(ctoi(PTON(p , m)) > bomb
                     and ukwn == 0) return false;
@@ -220,7 +219,7 @@ bool fill(char sym , POINT loc ,
     RPTP(m , loc , p , {
         if(m[p.y][p.x] == '.'){
             m[p.y][p.x] = sym;
-            if(not legalSuppose(p.y , p.x))
+            if(not legal_suppose(p.y , p.x))
                 return false;
             vp.push_back(p);
             if(sym == 'F' and ref_flg){
@@ -243,8 +242,8 @@ bool expand(int y ,int x , vector<vector<int> > mrk){
     POINT loc = {x , y}; // the point is not number
     RPTP(m , loc , p , {
         if(isdigit(m[p.y][p.x])){
-            int bomb = adjCnt(p , 'F' , m);
-            int ukwn = adjCnt(p , '.' , m);
+            int bomb = cnt_adj(p , 'F' , m);
+            int ukwn = cnt_adj(p , '.' , m);
             if(ukwn != 0){
                 if(bomb == ctoi(m[p.y][p.x]))
                     if(not fill('_' , p , mrk))
@@ -266,7 +265,7 @@ void dfs(int y , int x , float done , float part){
         for(int i = 0 ; i < 2 ; i++){
             if(it[i] == 'F') remain_flags--;
             m[y][x] = it[i];
-            if(legalSuppose(y , x)){
+            if(legal_suppose(y , x)){
                 vector<vector<char> > bak = m;
                 vector<vector<int> > mrk(m.size() ,
                         vector<int>(m[0].size() , 0));
@@ -274,7 +273,7 @@ void dfs(int y , int x , float done , float part){
                 if(ref_flg)
                     remain_flags_bak = remain_flags;
                 if(expand(y , x , mrk))
-                    if(allCnt('.' , m) == 0) addrslt(m);
+                    if(cnt_map('.' , m) == 0) addrslt(m);
                     else if(isNULL(nxt)) return;
                     else dfs(nxt.y , nxt.x , done , part / 2);
                 m = bak;
@@ -304,10 +303,9 @@ int main(int argc , char *argv[]){
 
     input();
 
-
     if(ref_flg)
         remain_flags =
-            atoi(argv[2]) - allCnt('F' , m);
+            atoi(argv[2]) - cnt_map('F' , m);
 
     dfs(0 , 0 , 0.0f , 100.0f);
     output();
@@ -335,8 +333,8 @@ imporved_sol(
     }
     RPT2V(m , i , j)
         if(omit(i , j)) m[i][j] = 'O';
-    omitcount = allCnt('O' , m);
-    remain_flags = flgs - allCnt('F' , m);
+    omitcount = cnt_map('O' , m);
+    remain_flags = flgs - cnt_map('F' , m);
     dfs(0 , 0 , 0.0f , 100.0f);
 
     bool ex_zero = false;

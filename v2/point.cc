@@ -1,8 +1,10 @@
 #include "point.h"
+#include "mark.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-POINT **adjPts(POINT pt , vector<vector<char> > vec){
+POINT **adjPts(POINT pt , vector<vector<int> > vec){
     POINT **rtn =
         (POINT**)calloc(8 , sizeof(POINT*)) ,
         d[] = {
@@ -27,5 +29,31 @@ POINT **adjPts(POINT pt , vector<vector<char> > vec){
             idx++;
         }
     }
+    return rtn;
+}
+
+int cnt_map(int what, vector<vector<int> > mat) {
+    int i , j, rtn = 0;
+    if(!(what <= ERR && what >= UNK))
+        puts("cnt_map Error") , exit(0);
+
+    RPT2V(mat , i , j)
+        if(mat[i][j] == what) rtn += 1;
+
+    return rtn;
+}
+
+int cnt_adj(POINT pt , int type , vector<vector<int> > mat) {
+    int rtn = 0;
+    RPTP(mat , pt , p ,
+            { if(PTON(p , mat) == type) rtn++; });
+    return rtn;
+}
+
+int cnt_adj_mrk(POINT pt , vector<vector<int> > mat){
+    int rtn = 0;
+    RPTP(mat , pt , p , {
+        if(HASBOMB(mat , p)) rtn++;
+    });
     return rtn;
 }

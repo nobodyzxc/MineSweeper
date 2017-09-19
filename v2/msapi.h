@@ -3,61 +3,23 @@
 
 
 #include<windows.h>
+#include<vector>
+using namespace std;
 
 #include"game.h"
 #include"mark.h"
+#include"point.h"
 #include"analyscr.h"
 #include"ctrlmus.h"
 
-#define PTINMAP(p) ((p).x < MAPWD && (p).x >= 0 \
-                        && (p).y < MAPHI && (p).y >= 0)
-
-#define HASBOMB(mp , p) ((mp)[(p).y][(p).x] >= ONE \
-                        && (mp)[(p).y][(p).x] <= EAT)
-
-#define PTON(p , mp) ((mp)[(p).y][(p).x])
-
-#define UNOPEN(mp , p) ((mp)[(p).y][(p).x] == UNK \
-                        || ((mp)[(p).y][(p).x]) == FLG)
-
-#define OPENED(mp , p) (!UNOPEN(mp , p))
-
-#define RPTP(begp , p_var , stat) \
-    do{ \
-        int _pidx; \
-        POINT **_pp = adjPts(begp); \
-        for(_pidx = 0 ; _pidx < 8 && \
-                _pp[_pidx] ; _pidx++){ \
-            POINT p_var = *_pp[_pidx]; \
-            stat; \
-        } \
-        for(_pidx = 0 ; _pidx < 8 ; _pidx++) \
-        free(_pp[_pidx]); \
-        free(_pp); \
-    }while(0);
-
-//#define RPTP(point , p_var , pidx_var , stat) \
-//    do{ \
-//        int pidx_var; \
-//        POINT **p_var = adjPts(point); \
-//        for(pidx_var = 0 ; pidx_var < 8 && \
-//                p_var[pidx_var] ; pidx_var++){ \
-//            stat; \
-//        } \
-//        for(pidx_var = 0 ; pidx_var < 8 ; pidx_var++) \
-//            free(p_var[pidx_var]); \
-//        free(p_var); \
-//    }while(0);
-//
 void initApi(int y , int x);
 
 void showGamePane();
 
 int getColor(COLORREF);
 
-void printTab(int tab[][MAPWD]);
-
-POINT **adjPts(POINT);
+//TODO: add template for adjPTs
+POINT **adjPts(POINT , vector<vector<int> >);
 
 int adjPtNum(POINT);
 

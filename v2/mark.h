@@ -19,4 +19,13 @@ const char MSSYM[] = {
     [SAF] = '0' ,
     [ERR] = 'X'
 };
+
+#define HASBOMB(mp , p) ((mp)[(p).y][(p).x] >= ONE \
+                        && (mp)[(p).y][(p).x] <= EAT)
+
+#define UNOPEN(mp , p) ((mp)[(p).y][(p).x] == UNK \
+                        || ((mp)[(p).y][(p).x]) == FLG)
+
+#define OPENED(mp , p) (!UNOPEN(mp , p))
+
 #endif

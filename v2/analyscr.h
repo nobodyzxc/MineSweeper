@@ -3,6 +3,9 @@
 
 #include<windows.h>
 #include<stdbool.h>
+#include<vector>
+using namespace std;
+
 #include"mark.h"
 #include"game.h"
 /* MAPHI MAPWD */
@@ -84,7 +87,7 @@ COLORREF GetPx(int x , int y , bool update);
 
 int analySpt(POINT pt , bool update);
 
-int analyRecr(POINT pt , int visit[][MAPWD]);
+int analyRecr(POINT pt , vector<vector<int> > visit);
 
 void analyMap(bool update);
 

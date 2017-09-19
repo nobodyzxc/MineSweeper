@@ -7,7 +7,7 @@
 #include"msapi.h"
 #include"analyscr.h"
 
-extern int map[MAPHI][MAPWD] , exh[MAPHI][MAPWD];
+extern vector<vector<int> > map , exh;
 
 static LONG lWidth , lHeight;
 
@@ -108,11 +108,11 @@ int analySpt(POINT pt , bool update){
     return PTON(pt , map);
 }
 
-int analyRecr(POINT pt , int visit[][MAPWD]){
+int analyRecr(POINT pt , vector<vector<int> > visit){
 
     int idx , rtn = 0;
 
-    RPTP(pt , p , {
+    RPTP(visit , pt , p , {
         if(PTON(p , visit))
             continue;
         PTON(p , visit) = true;
@@ -196,11 +196,9 @@ LPDWORD GetBMptr(bool update){
 void analyMap(bool update){
     int y , x;
     GetBMptr(update);
-    for(y = 0 ; y < MAPHI ; y++){
-        for(x = 0 ; x < MAPWD ; x++){
-            POINT pt = {x , y};
-            analySpt(pt , false);
-        }
+    RPTMAP(y , x){
+        POINT pt = {x , y};
+        analySpt(pt , false);
     }
 }
 

@@ -2,6 +2,8 @@
 #include "ctrlmus.h"
 #include "msapi.h"
 
+extern vector<vector<int> > map;
+
 MOUSEINPUT lDown , lUp , rDown , rUp;
 INPUT inputMouseDown_L , inputMouseUp_L ,
       inputMouseDown_R , inputMouseUp_R;
@@ -41,7 +43,7 @@ void click(POINT pt , int type) {
         mus.x = WINLOCX;
         puts("ccc");
     }
-    else if(PTINMAP(pt)){
+    else if(PTINVEC(pt , map)){
         mus.y = CellCenY(pt.y);
         mus.x = CellCenX(pt.x);
     }

@@ -7,7 +7,7 @@ CXX      = x86_64-w64-mingw32-g++.exe
 endif
 
 CXXFLAGS = -g -static -mwindows
-SRCS     = msapi analyscr ctrlmus
+SRCS     = msapi analyscr ctrlmus point
 _SRCS    = ${SRCS:%=%.cc}
 _OBJS    = ${SRCS:%=%.o}
 MAIN     = main
