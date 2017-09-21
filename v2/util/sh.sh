@@ -1,5 +1,0 @@
-alias re='../execute -s | cddr | rmclr > data && ./a.exe data 99'
-alias er='../execute -r'
-alias e='../execute'
-alias rec='../execute -s | cddr | rmclr > data'
-alias ga=' ../../../online-minesweeper-js/release-online/nw.exe &'

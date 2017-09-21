@@ -79,15 +79,13 @@ const COLORREF CLRNUM[] = {
 
 void getGameWin();
 
-void setFormLoc();
-
-void setZEROLoc(int y , int x);
+void setFormLoc(int y , int x);
 
 COLORREF GetPx(int x , int y , bool update);
 
 int analySpt(POINT pt , bool update);
 
-int analyRecr(POINT pt , vector<vector<int> > visit);
+int analyRecr(POINT pt , vector<vector<int> > &visit);
 
 void analyMap(bool update);
 

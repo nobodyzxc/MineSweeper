@@ -8,9 +8,12 @@ using namespace std;
 
 #include"game.h"
 #include"mark.h"
-#include"point.h"
 #include"analyscr.h"
 #include"ctrlmus.h"
+#include"point.h"
+
+#define Dprintf(format , ...) printf("")
+#define Dputs(str) printf("")
 
 void initApi(int y , int x);
 
@@ -18,8 +21,7 @@ void showGamePane();
 
 int getColor(COLORREF);
 
-//TODO: add template for adjPTs
-POINT **adjPts(POINT , vector<vector<int> >);
+void printTab(vector<vector<int> > tab , bool move);
 
 int adjPtNum(POINT);
 

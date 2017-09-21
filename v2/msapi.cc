@@ -10,13 +10,15 @@ extern HWND GameHwnd;
 
 void initApi(int y , int x){
     checkResolution();
-    setFormLoc();
+    setFormLoc(0 , 0);
     showGamePane();
     initMouse();
 }
 
 extern POINT ZERO;
+
 void showGamePane(){
+    if(!GameHwnd) getGameWin();
     ShowWindow(GameHwnd , 2);
     ShowWindow(GameHwnd , SW_SHOWNORMAL);
     w_usleep(750000);
@@ -52,4 +54,17 @@ void w_usleep(__int64 usec)
     SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
     WaitForSingleObject(timer, INFINITE);
     CloseHandle(timer);
+}
+
+extern vector<vector<int> >exh;
+void printTab(vector<vector<int> > tab , bool move){
+    if(move)
+        printf("\033[40A");
+    char fmt[2][30] = {
+        "%c " , "\033[1;33m%c\033[0m "
+    };
+    NRPT2V(tab , i , j , {
+        printf(fmt[exh[i][j]] , MSSYM[tab[i][j]]);
+        } , { puts(""); });
+    return;
 }

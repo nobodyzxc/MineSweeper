@@ -2,6 +2,7 @@
 #include<unistd.h>
 #include<stdbool.h>
 
+#include"point.h"
 #include"game.h"
 #include"mark.h"
 #include"msapi.h"
@@ -52,28 +53,30 @@ void getGameWin(){
         puts("Please start your game.") , exit(0);
 }
 
-void setFormLoc(){
-
-    if(!GameHwnd) getGameWin();
-
-    RECT Msrc = { 0 };
-    HWND MSpane = GetWindow(GameHwnd , 5);
-
-    if(!MSpane) puts("Cannot Get Child Window") , exit(0);
-    if(!GetWindowRect(MSpane , &Msrc)){
-        puts("rect ERR");
-        printf("%d\n" , Msrc);
-        exit(0);
+void setFormLoc(int y , int x){
+    if(y >= 0 or x >= 0){
+        printf("set From to %d %d\n" , y , x);
+        ZERO.y = y;
+        ZERO.x = x;
     }
-    ZERO.x = Msrc.left + MAP_O_FIX_X;
-    ZERO.y = Msrc.top + MAP_O_FIX_Y;
-    printf("ZERO.x = %d , ZERO.y = %d\n" ,
-            ZERO.x , ZERO.y);
+    else{
+        if(!GameHwnd) getGameWin();
 
-}
+        RECT Msrc = { 0 };
+        HWND MSpane = GetWindow(GameHwnd , 5);
 
-void setZEROLoc(int y , int x){
-    ZERO.y = y , ZERO.x = x;
+        if(!MSpane) puts("Cannot Get Child Window") , exit(0);
+        if(!GetWindowRect(MSpane , &Msrc)){
+            puts("rect ERR");
+            printf("%d\n" , Msrc);
+            exit(0);
+        }
+        ZERO.x = Msrc.left + MAP_O_FIX_X;
+        ZERO.y = Msrc.top + MAP_O_FIX_Y;
+        printf("ZERO.x = %d , ZERO.y = %d\n" ,
+                ZERO.x , ZERO.y);
+    }
+    checkResolution();
 }
 
 COLORREF GetPx(int x , int y , bool update){
@@ -83,7 +86,7 @@ COLORREF GetPx(int x , int y , bool update){
 
 
 int analySpt(POINT pt , bool update){
-
+    
     if(PTON(pt , map) != UNK)
         return PTON(pt , map);
 
@@ -108,19 +111,22 @@ int analySpt(POINT pt , bool update){
     return PTON(pt , map);
 }
 
-int analyRecr(POINT pt , vector<vector<int> > visit){
-
-    int idx , rtn = 0;
-
+int analyRecr(POINT pt , vector<vector<int> > &visit){
+                        // damn it.
+    visit[pt.y][pt.x] = 1;
+    int rtn = 0;
     RPTP(visit , pt , p , {
-        if(PTON(p , visit))
-            continue;
-        PTON(p , visit) = true;
-        if(PTON(p , map) == UNK)
-            analySpt(p , false);
-        if(PTON(p , map) == SAF)
-            analyRecr(p , visit);
-    });
+            if(p.y == pt.y and p.x == pt.x){
+                puts("fuck"); exit(0);
+            }
+            if(PTON(p , visit))
+                continue;
+            PTON(p , visit) = true;
+            if(PTON(p , map) == UNK)
+                analySpt(p , false);
+            if(PTON(p , map) == SAF)
+                analyRecr(p , visit);
+            });
 
     return rtn;
 }
@@ -136,7 +142,7 @@ LPDWORD GetBMptr(bool update){
     if(!update) return lpBits;
 
 
-    puts("update map(GetBMptr)");
+    Dputs("update map(GetBMptr)");
 
     static DWORD dwStart;
     dwStart = GetTickCount();
@@ -156,7 +162,7 @@ LPDWORD GetBMptr(bool update){
     bi.bmiHeader.biCompression = BI_RGB;
 
     if(hbmMem){
-        puts("REALSE!A LOT IN BMptr");
+        Dputs("REALSE!A LOT IN BMptr");
         SelectObject(hdcMem, hbmOld);
         DeleteObject(hbmMem);
         DeleteDC(hdcMem);
@@ -168,7 +174,7 @@ LPDWORD GetBMptr(bool update){
 
     if(!lpBits) puts("MALLOC FAILD!");
     if(!hbmMem) puts("YES , IT SURELY DIE");
-    if(!hbmMem && !lpBits) exit(0);
+    if(!hbmMem && !lpBits) puts("NULL hbmMem") , exit(0);
 
     if(hbmMem){
 
@@ -189,7 +195,7 @@ LPDWORD GetBMptr(bool update){
 
     }
     ReleaseDC(HWND_DESKTOP, hdcScreen);
-
+    Dputs("analy screen end");
     return lpBits;
 }
 
@@ -207,10 +213,10 @@ int gameState(void){
     int rtn = RUN;
     if(GetPx(WINLOCX , WINLOCY , false)
             == SUNGLAS)
-        rtn = WIN , puts("win");
+        rtn = WIN;// , puts("win");
     else if(GetPx(LOSLOCX , LOSLOCY , false)
             == DEDFACE)
-        rtn = LOS , puts("lose");
+        rtn = LOS;// , puts("lose");
     return rtn;
 }
 
@@ -243,6 +249,12 @@ void checkResolution(void){
 
     int w = GetDeviceCaps(hdcScreen, HORZRES) , knw = 0;
     int h = GetDeviceCaps(hdcScreen, VERTRES) , i;
+
+    if(ZERO.y < 0
+            || ZERO.y > h
+            || ZERO.x < 0
+            || ZERO.x > w)
+        puts("Invalid form position") , exit(0);
 
     for(i = 0 ; i < 12 ; i++)
         if(sup[i][0] == w && sup[i][1] == h)

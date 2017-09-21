@@ -1,9 +1,10 @@
 #ifndef MARK_H
 #define MARK_H
-enum {
-    UNK , ONE , TWO , THR , FOR , FIV ,
-    SIX , SVN , EAT , FLG , SAF , ERR
-};
+const int
+    UNK = 0 , ONE = 1 , TWO = 2 ,
+    THR = 3 , FOR = 4 , FIV = 5 ,
+    SIX = 6 , SVN = 7 , EAT = 8 ,
+    FLG = 9 , SAF = 10, ERR = 11;
 
 const char MSSYM[] = {
     [UNK] = '.' ,

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "ctrlmus.h"
+#include "point.h"
 #include "msapi.h"
 
 extern vector<vector<int> > map;
@@ -41,7 +42,6 @@ void click(POINT pt , int type) {
     if(!~pt.x && !~pt.y){
         mus.y = WINLOCY;
         mus.x = WINLOCX;
-        puts("ccc");
     }
     else if(PTINVEC(pt , map)){
         mus.y = CellCenY(pt.y);
@@ -78,10 +78,12 @@ void click(POINT pt , int type) {
     }
 
     if(type == RIGHT)
-        printf("flag @ (%d , %d)\n" , pt.y , pt.x);
+        Dprintf("flag @ (%d , %d)\n" , pt.y , pt.x);
 
     if(type == LEFT)
-        printf("open @ (%d , %d)\n" , pt.y , pt.x);
+        Dprintf("open @ (%d , %d)\n" , pt.y , pt.x);
+
+    printTab(map , true);
     return;
 }
 

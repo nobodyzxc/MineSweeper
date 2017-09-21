@@ -6,12 +6,15 @@ else
 CXX      = x86_64-w64-mingw32-g++.exe
 endif
 
+CXX      = g++
+
 CXXFLAGS = -g -static -mwindows
-SRCS     = msapi analyscr ctrlmus point
+SRCS     = msapi analyscr ctrlmus enumerate solve
 _SRCS    = ${SRCS:%=%.cc}
 _OBJS    = ${SRCS:%=%.o}
 MAIN     = main
 _MAIN    = ${MAIN:%=%.cc}
+_OMAN    = main.o
 TRGT     = execute
 
 all:
