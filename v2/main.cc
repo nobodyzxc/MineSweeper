@@ -1,7 +1,5 @@
 #include<stdio.h>
 #include<windows.h>
-#include<Winuser.h>
-#include<Windows.h>
 #include<process.h>
 #include<string.h>
 #include<stdlib.h>

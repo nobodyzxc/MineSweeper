@@ -62,13 +62,8 @@ void progress(float status){
     puts("");
 }
 
-/*
-https://stackoverflow.com/questions/1838368/
-calculating-the-amount-of-combinations
-*/
 struct sciNotat
 choose(unsigned long long n, unsigned long long k){
-//    fprintf(stderr , "C %llu take %llu\n" , n , k);
     if (k > n) puts("choose err") , exit(0);
     struct sciNotat cal(1 , 0);
     for (unsigned long long d = 1; d <= k; ++d) {
