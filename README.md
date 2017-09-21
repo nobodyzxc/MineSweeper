@@ -1,4 +1,4 @@
-#MineSweeper Solvers
+# MineSweeper Solvers
 
 Solvers I wrote.
 

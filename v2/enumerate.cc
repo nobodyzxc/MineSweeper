@@ -72,11 +72,9 @@ void output(){
     if(w == 2 || w >= 4) w = 3;
     sprintf(ofmt[0] , "\033[1;30m%%%dc\033[0m " , w);
     sprintf(ofmt[1] , "\033[1;30m%%%dlld\033[0m " , w);
-    sprintf(ofmt[2] , "\x1b[1;30m%d\033[0;37m%d\033[0m");//%%?
 
     sprintf(fmt[0] , "%%%dc " , w);
     sprintf(fmt[1] , "\033[1;33m%%%dlld\033[0m " , w);
-    sprintf(fmt[2] , "\x1b[32m%d\033[01;31m%d\033[0m");
 
     NRPT2V(freq , i , j , {
         if(not ref_flg and m[i][j] == 'O'){
@@ -277,13 +275,14 @@ void dfs(int y , int x , float done , float part){
     }
 }
 
-#ifdef MAIN
+#ifdef ENUM_MAIN
 int main(int argc , char *argv[]){
-    if(argc > 1)
+    if(argc > 1){
         if(!freopen(argv[1] , "r" , stdin))
             printf("read %s failed\n" , argv[1]) ,
                 exit(0);
         else printf("read %s\n" , argv[1]);
+    }
 
     if(argc > 2) ref_flg = true;
 

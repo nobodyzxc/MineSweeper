@@ -74,7 +74,7 @@ choose(unsigned long long n, unsigned long long k){
     return cal;
 }
 
-#ifdef MAIN
+#ifdef UTIL_MAIN
 int main(void){
     sciNotat e = choose(426 , 79);
     e.add(choose(500 , 79));

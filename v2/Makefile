@@ -19,8 +19,8 @@ TRGT     = execute
 
 all:
 ifeq ($(OS),Windows_NT)
-	$(CXX) $(CXXFLAGS) -c $(_SRCS)
-	$(CXX) $(CXXFLAGS) -o $(TRGT) $(_MAIN) $(_OBJS)
+	$(CXX) $(CXXFLAGS) -Wall -c $(_SRCS)
+	$(CXX) $(CXXFLAGS) -Wall -o $(TRGT) $(_MAIN) $(_OBJS)
 else
 	echo 'not available on other platforms except windows'
 endif

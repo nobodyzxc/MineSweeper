@@ -12,8 +12,8 @@ using namespace std;
 #include"ctrlmus.h"
 #include"point.h"
 
-#define Dprintf(format , ...) printf("")
-#define Dputs(str) printf("")
+#define Dprintf(format , ...) (0)
+#define Dputs(str) (0)
 
 void initApi(int y , int x);
 

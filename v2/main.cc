@@ -55,7 +55,7 @@ void parse_flags(int argc , char *argv[]){
             else if(EQS(argv[i] , "-yx"))
                 locYX = i;
             else if(argv[i][0] == '-')
-                for(int j = 1 ; j < strlen(argv[i]) ; j++)
+                for(int j = 1 ; j < (int)strlen(argv[i]) ; j++)
                     if(argv[i][j] == 's')
                         flag_s = 1;
                     else if(argv[i][j] == 'b')
