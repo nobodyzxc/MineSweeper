@@ -23,7 +23,8 @@ vector<vector<char> > m;
 vector<vector<sciNotat> > freq;
 
 void init_env(int flgs){
-    counts = 0 , ref_flg = 1;
+    counts = 0;
+    ref_flg = 1;
     remain_flags = flgs;
     dfscount = 0 , omitcount = 0;
     for(uint i = 0 ; i < m.size() ; i++)
@@ -32,13 +33,6 @@ void init_env(int flgs){
     for(uint i = 0 ; i < freq.size() ; i++)
         freq[i].clear();
     freq.clear();
-}
-
-void printV(vector<vector<char > > mat){
-    //return;
-    NRPT2V(mat , i , j ,
-            cout << mat[i][j] << ' ' ,
-            cout << endl);
 }
 
 bool omit(int y , int x){
@@ -143,21 +137,29 @@ void addrslt(vector<vector<char> > mat){
         puts("fuck , fake!") , exit(0);
 
     counts += 1;
+
+    sciNotat nk;
+    if(ref_flg)
+     nk = choose(omitcount , remain_flags);
+
     RPT2V(mat , i , j)
         if(mat[i][j] == 'F' || mat[i][j] == 'O'){
-            if(ref_flg){
+            if(ref_flg and mat[i][j] == 'O'){
                 if(omitcount < remain_flags){
                     printf("error of c(%lld , %d)(0)\n" ,
                             omitcount , remain_flags);
                     return;
                 }
-                freq[i][j].add(choose(omitcount , remain_flags));
+                if(remain_flags)
+                    freq[i][j].add(nk);
             }
             else if(mat[i][j] == 'F'){
-                if(omitcount == 0) freq[i][j].mantissa += 1;
-                else if(remain_flags <= 0) freq[i][j].mantissa += 1;
+                if(omitcount == 0)
+                    freq[i][j].mantissa += 1;
+                else if(remain_flags <= 0)
+                    freq[i][j].mantissa += 1;
                 else if(remain_flags <= omitcount)
-                    freq[i][j].add(choose(omitcount , remain_flags));
+                    freq[i][j].add(nk);
                 else{
                     printf("error of c(%lld , %d)(1)\n" ,
                             omitcount , remain_flags);

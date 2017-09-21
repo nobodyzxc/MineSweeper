@@ -37,6 +37,7 @@ void initMouse(void){
 }
 
 void click(POINT pt , int type) {
+
     POINT mus;
 
     if(!~pt.x && !~pt.y){

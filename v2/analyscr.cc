@@ -50,7 +50,8 @@ int FORMLOCY(){
 void getGameWin(){
     GameHwnd = FindWindow(NULL , "Minesweeper");
     if(!GameHwnd)
-        puts("Please start your game.") , exit(0);
+        puts("Please start your game.") ,
+            printTab(map , false) , exit(0);
 }
 
 void setFormLoc(int y , int x){
@@ -107,6 +108,8 @@ int analySpt(POINT pt , bool update){
             PTON(pt , map) = FLG;
         }
     }
+    else if(PTON(pt , map) == ERR)
+        printf("ERR scan on %d %d" , pt.y , pt.x) , exit(1);
 
     return PTON(pt , map);
 }

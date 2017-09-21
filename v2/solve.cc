@@ -130,6 +130,7 @@ void analyAftClk(POINT pt , int type){
             });
     }
     Dputs("analy...aft click end");
+    if(gameState() != RUN) exit(0);
 }
 
 void fancyClickLeft(POINT p){
