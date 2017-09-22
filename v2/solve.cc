@@ -86,8 +86,11 @@ int direct(){
 }
 
 void analyAftClk(POINT pt , int type){
+    bool change = false;
+
     Dputs("analy...aft click");
-    w_usleep(50000);
+
+    //w_usleep(1000);//50000
     //wait result after click
 
     if(!PTINVEC(pt , map))
@@ -102,35 +105,36 @@ void analyAftClk(POINT pt , int type){
         Dputs("bp on 196");
         PTON(pt , visit) = true;
         Dputs("start analyRecr");
-        analyRecr(pt , visit);
+        change |= analyRecr(pt , visit);
         Dputs("after analyRecr");
         Dputs("start direct");
-        direct();
+        change |= direct();
         Dputs("after direct");
     }
     else if(type == LEFT){
         GetBMptr(true);
         Dputs("bp on 203");
-        analySpt(pt , false);
+        change |= analySpt(pt , false) != UNK;
         Dputs("analing spot");
         if(HASBOMB(map , pt)){
-            dirSng(pt);
+            change |= dirSng(pt);
         }
         else if(map[pt.y][pt.x] == SAF){
             PTON(pt , visit) = true;
             Dputs("recr");
-            analyRecr(pt , visit);
+            change |= analyRecr(pt , visit);
             Dputs("ANALY OF LEFT CLK @ SAF DONE");
-            direct();
+            change |= direct();
         }
     }
     else if(type == RIGHT){
         RPTP(map , pt , p , {
-            dirSng(p);
+            change |= dirSng(p);
             });
     }
     Dputs("analy...aft click end");
     if(gameState() != RUN) exit(0);
+    if(not change) puts("re") , analyAftClk(pt , type);
 }
 
 void fancyClickLeft(POINT p){

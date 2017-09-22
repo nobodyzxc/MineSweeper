@@ -117,7 +117,7 @@ int analySpt(POINT pt , bool update){
 int analyRecr(POINT pt , vector<vector<int> > &visit){
                         // damn it.
     visit[pt.y][pt.x] = 1;
-    int rtn = 0;
+    bool change = false;
     RPTP(visit , pt , p , {
             if(p.y == pt.y and p.x == pt.x){
                 puts("fuck"); exit(0);
@@ -126,12 +126,12 @@ int analyRecr(POINT pt , vector<vector<int> > &visit){
                 continue;
             PTON(p , visit) = true;
             if(PTON(p , map) == UNK)
-                analySpt(p , false);
+                change |= analySpt(p , false) != UNK;
             if(PTON(p , map) == SAF)
                 analyRecr(p , visit);
             });
 
-    return rtn;
+    return change;
 }
 
 LPDWORD GetBMptr(bool update){

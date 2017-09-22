@@ -48,14 +48,15 @@ char sign(int cur , int it){
 }
 
 void progress(float status){
-    static int init = false;
-    if(status < 0){
-        init = false;
-        return;
-    }
-    if(not init) init = true;
-    else   printf("\033[1A");
+//    static int init = false;
+//    if(status < 0){
+//        init = false;
+//        return;
+//    }
+//    if(not init) init = true;
+//    else   printf("\033[1A");
 
+    printf("\033[40A\033[16B");
     for(int i = 0 ; i < 100 ; i++)
         printf("%c" , sign((int)status , i));
     printf("|");

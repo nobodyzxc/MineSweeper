@@ -62,8 +62,10 @@ void input(){
 }
 
 void output(){
-    char fmt[3][60] , ofmt[3][60] , sm[200]; //
+    char fmt[3][60] , ofmt[3][60] , sm[200];
     sciNotat maxv; int w;
+
+    printf("\033[40A\033[17B");
     RPT2V(freq , i , j){
         maxv = maxv.greaterThan(freq[i][j]) ? maxv : freq[i][j];
     }
@@ -137,8 +139,11 @@ void addrslt(vector<vector<char> > mat){
     counts += 1;
 
     sciNotat nk;
+
+    if(omitcount < remain_flags) return;
+
     if(ref_flg)
-     nk = choose(omitcount , remain_flags);
+        nk = choose(omitcount , remain_flags);
 
     RPT2V(mat , i , j)
         if(mat[i][j] == 'F' || mat[i][j] == 'O'){

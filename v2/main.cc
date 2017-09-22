@@ -132,7 +132,7 @@ int main(int argc , char *argv[]){
     else{
         POINT pt = {-1 , -1};
         if(not flag_c)
-            clickLeft(pt);        //reset status
+            clickLeft(pt) , w_usleep(50000); //reset status
         pt.x = MAPWD / 2  , pt.y = MAPHI / 2; //open center
         fancyClickLeft(pt);
         flags = FLAGNUM - cnt_map(FLG , map);
@@ -145,7 +145,7 @@ int main(int argc , char *argv[]){
     printf("flags left:%d , block left:%d\n" ,
             flags , cnt_map(UNK , map));
     printf("\033[40A\033[34B");
-
+    printTab(map , false);
     return 0;
 #endif
 }
