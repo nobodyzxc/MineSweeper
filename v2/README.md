@@ -1,4 +1,4 @@
-# Solver
+# MineSweeperSolver
 
 A new version made from v1 after one year.
 
