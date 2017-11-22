@@ -18,6 +18,7 @@
 #include<vector>
 using namespace std;
 
+extern int flag_b;
 extern int flags;
 extern vector<vector<int> > map , rsnMap , exh;
 
@@ -75,22 +76,23 @@ int dirSng(POINT pt){
 }
 
 int direct(){
-    Dputs("dir beg");
     int modify = 0;
     RPTMAP(y , x){
         POINT pt = {x , y};
         modify |= dirSng(pt);
     }
-    Dputs("dir end");
     return modify;
 }
 
 void analyAftClk(POINT pt , int type){
     bool change = false;
 
-    Dputs("analy...aft click");
+    if(flag_b){
+        w_usleep(10000);
+    }
+    else
+        w_usleep(1000);//50000
 
-    //w_usleep(1000);//50000
     //wait result after click
 
     if(!PTINVEC(pt , map))
@@ -98,32 +100,28 @@ void analyAftClk(POINT pt , int type){
 
     vector<vector<int> > visit;
     visit = exh;
-    //RPTHI(i)
-    //    visit.push_back(vector<int>(MAPWD , 0));
     if(type == BOTH){
         GetBMptr(true);//um... I forget it.
-        Dputs("bp on 196");
         PTON(pt , visit) = true;
-        Dputs("start analyRecr");
         change |= analyRecr(pt , visit);
-        Dputs("after analyRecr");
-        Dputs("start direct");
         change |= direct();
-        Dputs("after direct");
     }
     else if(type == LEFT){
         GetBMptr(true);
-        Dputs("bp on 203");
-        change |= analySpt(pt , false) != UNK;
-        Dputs("analing spot");
+        if(analySpt(pt , false) == UNK){
+            COLORREF dclr;
+            printf("saf? %d\n" , ISSAF(pt , false));
+            printf("invalid click on %d %d\n" ,
+                    pt.y , pt.x) , exit(0);
+        }
+        else
+            change = true;
         if(HASBOMB(map , pt)){
             change |= dirSng(pt);
         }
         else if(map[pt.y][pt.x] == SAF){
             PTON(pt , visit) = true;
-            Dputs("recr");
             change |= analyRecr(pt , visit);
-            Dputs("ANALY OF LEFT CLK @ SAF DONE");
             change |= direct();
         }
     }
@@ -132,14 +130,27 @@ void analyAftClk(POINT pt , int type){
             change |= dirSng(p);
             });
     }
-    Dputs("analy...aft click end");
     if(gameState() != RUN) exit(0);
-    if(not change) puts("re") , analyAftClk(pt , type);
+    if(not change){
+        //puts("re?");
+        //getchar();
+        GetBMptr(true);
+        analyAftClk(pt , type);
+    }
+    printTab(map , true);
+    //bug => not change
 }
 
 void fancyClickLeft(POINT p){
     clickLeft(p);
     analyAftClk(p , LEFT);
+}
+
+void fancyClickRight(POINT p){
+    clickRight(p);
+    PTON(p , map) = FLG;
+    flags--;
+    dirSng(p);
 }
 
 void fancyClickBoth(POINT p){
@@ -151,8 +162,6 @@ int rsning(POINT pt){//input a space with num arround !
 
     RPTP(map , pt , p , {
 
-        Dprintf("adj*Num (%d,%d)\n" , p.y ,
-                p.x);
 
         int adjUnkNum = cnt_adj(p , UNK , rsnMap);
         int adjFlgNum = cnt_adj(p , FLG , rsnMap);
@@ -164,14 +173,14 @@ int rsning(POINT pt){//input a space with num arround !
         int ptMrk = PTON(p , rsnMap);
         if(HASBOMB(rsnMap , p) && ptMrk == adjFlgNum){
 
-            Dprintf("expn 0 (%d,%d)\n" , p.y , p.x);
+            //Dprintf("expn 0 (%d,%d)\n" , p.y , p.x);
             if(rsnExpn(p , SAF)) return 1;
         }
 
         if(HASBOMB(rsnMap , p)
                 && ptMrk == adjFlgNum + adjUnkNum){
 
-            Dprintf("expn F (%d,%d)\n" , p.y , p.x);
+            //Dprintf("expn F (%d,%d)\n" , p.y , p.x);
             if(rsnExpn(p , FLG)) return 1;
         }
 
@@ -223,8 +232,6 @@ int rsnExpn(POINT pt , int type){
 int suppose(int what){
     int rtn = 0;
 
-    Dputs("suppose begin");
-
     RPTMAP(i , j){
         rsnMap = map;
         rsnMap = map;
@@ -250,21 +257,18 @@ int suppose(int what){
         }
     }
 
-    Dputs("suppose return\n");
     return rtn;
 }
 
 int play(){
 
     while(1){
-        Dputs("solving");
         if(cnt_map(UNK , map) == MAPHI * MAPWD){
             Dputs("guess");
             exit(0);
             analyMap(true);
             continue;
         }
-        Dputs("directing");
         if(direct()) continue;
 
         if(gameState() != RUN) return gameState();
@@ -283,10 +287,12 @@ int play(){
         }
 
         Dputs("improved solving");
-        if(improved_sol(map , flags , fancyClickLeft , clickRight)){
+        if(improved_sol(map , flags , fancyClickLeft , fancyClickRight)){
             if(gameState() != RUN) return gameState();
             continue;
         }
+
+        printf("nothing to solve\n");
         return gameState();
     }
     Dputs("break");

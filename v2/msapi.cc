@@ -27,7 +27,7 @@ void showGamePane(){
 int getColor(COLORREF _color){
     int i;
     for(i = 0 ;
-            i < sizeof(CLRNUM) / sizeof(COLORREF) ;
+            i < (int)(sizeof(CLRNUM) / sizeof(COLORREF)) ;
             i++)
         if(_color == CLRNUM[i]) break;
     return i;
@@ -59,7 +59,7 @@ void w_usleep(__int64 usec)
 extern vector<vector<int> >exh;
 void printTab(vector<vector<int> > tab , bool move){
     if(move)
-        printf("\033[40A");
+        printf("\033[40A\033[1B");
     char fmt[2][30] = {
         "%c " , "\033[1;33m%c\033[0m "
     };

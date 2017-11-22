@@ -8,7 +8,7 @@ endif
 
 CXX      = g++
 
-CXXFLAGS = -g -static -mwindows
+CXXFLAGS = -g -static -mwindows -Wall
 SRCS     = msapi analyscr ctrlmus enumerate solve
 _SRCS    = ${SRCS:%=%.cc}
 _OBJS    = ${SRCS:%=%.o}
@@ -19,8 +19,8 @@ TRGT     = execute
 
 all:
 ifeq ($(OS),Windows_NT)
-	$(CXX) $(CXXFLAGS) -Wall -c $(_SRCS)
-	$(CXX) $(CXXFLAGS) -Wall -o $(TRGT) $(_MAIN) $(_OBJS)
+	$(CXX) $(CXXFLAGS) -c $(_SRCS)
+	$(CXX) $(CXXFLAGS) -o $(TRGT) $(_MAIN) $(_OBJS)
 else
 	echo 'not available on other platforms except windows'
 endif

@@ -69,7 +69,6 @@ void setFormLoc(int y , int x){
         if(!MSpane) puts("Cannot Get Child Window") , exit(0);
         if(!GetWindowRect(MSpane , &Msrc)){
             puts("rect ERR");
-            printf("%d\n" , Msrc);
             exit(0);
         }
         ZERO.x = Msrc.left + MAP_O_FIX_X;
@@ -87,7 +86,7 @@ COLORREF GetPx(int x , int y , bool update){
 
 
 int analySpt(POINT pt , bool update){
-    
+
     if(PTON(pt , map) != UNK)
         return PTON(pt , map);
 
@@ -120,7 +119,7 @@ int analyRecr(POINT pt , vector<vector<int> > &visit){
     bool change = false;
     RPTP(visit , pt , p , {
             if(p.y == pt.y and p.x == pt.x){
-                puts("fuck"); exit(0);
+                puts("analyscr.cc:124"); exit(0);
             }
             if(PTON(p , visit))
                 continue;
@@ -146,9 +145,9 @@ LPDWORD GetBMptr(bool update){
 
 
     Dputs("update map(GetBMptr)");
+    w_usleep(30000); // wait for click ...
 
-    static DWORD dwStart;
-    dwStart = GetTickCount();
+    GetTickCount();
     static HDC hdcScreen;
     hdcScreen = GetDC(HWND_DESKTOP);
 
@@ -203,7 +202,6 @@ LPDWORD GetBMptr(bool update){
 }
 
 void analyMap(bool update){
-    int y , x;
     GetBMptr(update);
     RPTMAP(y , x){
         POINT pt = {x , y};

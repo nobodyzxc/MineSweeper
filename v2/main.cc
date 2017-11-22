@@ -144,8 +144,6 @@ int main(int argc , char *argv[]){
     play();
     printf("flags left:%d , block left:%d\n" ,
             flags , cnt_map(UNK , map));
-    printf("\033[40A\033[34B");
-    printTab(map , false);
     return 0;
 #endif
 }

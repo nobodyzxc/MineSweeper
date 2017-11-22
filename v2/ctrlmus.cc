@@ -71,8 +71,7 @@ void click(POINT pt , int type) {
             type == BOTH || type == RIGHT
         };
 
-    UINT rtn;
-    for(i = 0 ; i < sizeof(cond) / sizeof(int) ; i++){
+    for(i = 0 ; i < (int)(sizeof(cond) / sizeof(int)) ; i++){
         if(cond[i] &&
                 !SendInput(1, &event[i] , sizeof(INPUT)))
             puts("SendInput Error") , exit(0);
